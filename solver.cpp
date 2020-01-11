@@ -1,8 +1,10 @@
+#ifndef UVECTOR_HPP
+#define UVECTOR_HPP
 #include <vector>
 #include "solver.hpp"
 
-solver_edp::solver_edp(const double& stepsT, const double& stepsX, const std::vector<double>& u0, const vol_model& vol)
-	: s_stepsT(stepsT), s_stepsX(stepsX), s_uo(u0), s_vol(vol.v_vol)
+solver_edp::solver_edp(const double& stepsT, const double& stepsX, const std::vector<double>& u0, std::vector<std::vector<double>> vol)
+	: s_stepsT(stepsT), s_stepsX(stepsX), s_uo(u0), s_vol(vol)
 	{
 	}
 
@@ -50,5 +52,6 @@ vol_model::vol_model(const std::vector<std::vector<double>>& vol)
 	: v_vol(vol)
 	{
 	}
-	
-	
+}
+
+#endif
