@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 	std::cout << pp.getname() << std::endl; // get the name
 	std::cout << pp.getpayoff()(90) << std::endl; //get the payoff function and evaluate it at 90
 	
+	
 	model model_pde(10, 10, 0.2, 0.05, 1./10., pp);
 	
 	std::vector<double> r(10);
