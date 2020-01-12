@@ -1,16 +1,17 @@
+#ifndef SOLVER_HPP
+#define SOLVER_HPP
 #include <vector>
+#include "model.hpp"
 
 class solver_edp
 {
 public:
 	
-	solver_edp(const double& maturity, const int& step, std::vector<std::vector<double>> vol);
-	std::vector<std::vector<double>> get_matrix();
-	std::vector<std::vector<double>> get_kappa();
-	
+	solver_edp(model pde_model);
+	std::vector<double> solve_pde();
 private:
-	double s_stepsT;
-	double s_stepsX;
-	std::vector<std::vector<double>> s_vol;
-	std::vector<double> u0;
+	model s_pde_model;
+	
 };
+
+#endif

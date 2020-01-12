@@ -25,6 +25,8 @@ set(PDE_SOLVER_SRCS
     closed_form.cpp
     model.cpp
     model.hpp
+    solver.cpp
+    solver.hpp
     main.cpp)
 
 set(PDE_SOLVER_TARGET pde_solver)
