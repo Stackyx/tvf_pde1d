@@ -19,7 +19,24 @@ int main(int argc, char* argv[])
 	std::cout << pp.getpayoff()(105) << std::endl;
 	std::cout << pp.getpayoff()(115) << std::endl;
 	
-	model model_pde(10, 0.2, 0.05, 1./10., pp);
+	model model_pde(10, 10, 0.2, 0.05, 1./10., pp);
+	
+	std::vector<double> r(10);
+	std::vector<std::vector<double>> sigma(10, std::vector<double>(10));
+	
+	for(int i=0; i<10; ++i)
+	{	
+		for (int j=0; j<10; ++j)
+		{
+			sigma[i][j] = i*1./100. + 0.2;
+		}
+		r[i]=i*3./100.;
+	}
+	
+	model model_pde_r(10, 10, 0.2, r, 1./10., pp);
+	model model_pde_sigmar(10, 10, sigma, r, 1./10., pp);
+	model model_pde_sigma(10, 10, sigma, 0.05, 1./10., pp);
+	
 	solver_edp solver_model(model_pde);
 	
 	std::vector<double> sol(solver_model.solve_pde());
