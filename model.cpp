@@ -5,11 +5,8 @@
 #include "model.hpp"
 
 model::model(const int& n, const double& sigma, const double& r, const double& dt, payoff& f)
-	: m_sigma(sigma), m_r(r), m_n(n), m_dt(dt)
+	: m_sigma(sigma), m_r(r), m_n(n), m_dt(dt), m_f(f)
 	{
-		std::cout << m_sigma << std::endl;
-		std::cout << m_r << std::endl;
-		std::cout << m_dt << std::endl;
 	}
 	
 std::vector<std::vector<double>> model::pde_matrix(const int& i)

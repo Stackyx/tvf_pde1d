@@ -9,12 +9,14 @@ public:
 	
 	std::vector<std::vector<double>> pde_matrix(const int& i);
 	std::vector<std::vector<double>> pde_matrix_to_inverse(const int& i);
+	
 private:
 	
 	double m_sigma;
 	double m_r;
 	double m_dt;
 	int m_n;
+	payoff m_f;
 
 };
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "closed_form.hpp"
 #include "model.hpp"
+#include "solver.hpp"
 #include <algorithm>
 
 
@@ -18,9 +19,10 @@ int main(int argc, char* argv[])
 	std::cout << pp.getpayoff()(105) << std::endl;
 	std::cout << pp.getpayoff()(115) << std::endl;
 	
-	model model_pde = model(10, 0.2, 0.05, 1./10., pp);
+	model model_pde(10, 0.2, 0.05, 1./10., pp);
+	solver_edp solver_model(model_pde);
 	
-	std::vector<std::vector<double>> mat_pde(model_pde.pde_matrix(2));
+	std::vector<double> sol(solver_model.solve_pde());
 	
 	return 0;
 }
