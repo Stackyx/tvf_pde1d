@@ -91,13 +91,17 @@ double model::get_r(const int&i)
 
 std::vector<std::vector<double>> model::pde_matrix(const int& i)
 {	
-	std::vector<std::vector<double>> mat(m_nx, std::vector<double>(m_nx));
+	std::vector<std::vector<double>> mat(3, std::vector<double>(m_nx));
 	
-	for(int j = 1; j<m_nx-1; ++j)
+	mat[1][0] = 1;
+	mat[0][0] = 0;
+	mat[2][m_nx-2] = 0;
+	
+	for(int j = 1; j<m_nx-2; ++j)
 	{
-		mat[j][j] = 1-1./2.*get_r(i)*i-1./2.*pow(get_vol(i,j)*i,2);
-		mat[j][j-1] = 1./4.*pow(get_vol(i,j)*i,2);
-		mat[j][j+1] = 1./2.*get_r(i)*i+1./4.*pow(get_vol(i,j)*i,2);
+		mat[1][j] = 0;
+		mat[0][j] = 0;
+		mat[2][j] = 0;
 	}
 	
 	return mat;
@@ -105,13 +109,17 @@ std::vector<std::vector<double>> model::pde_matrix(const int& i)
 
 std::vector<std::vector<double>> model::pde_matrix_to_inverse(const int& i)
 {
-	std::vector<std::vector<double>> mat(m_nx, std::vector<double>(m_nx));
-
-	for(int j = 1; j<m_nx-1; ++j)
+	std::vector<std::vector<double>> mat(3, std::vector<double>(m_nx));
+	
+	mat[1][0] = 1;
+	mat[0][0] = 0;
+	mat[2][m_nx-2] = 0;
+	
+	for(int j = 1; j<m_nx-2; ++j)
 	{
-		mat[j][j] = m_dt*(get_r(i) - 1./m_dt + 1./2.*get_r(i)*i+1./2.*pow(get_vol(i,j)*i, 2));
-		mat[j][j-1] = -1./4.*m_dt*pow(get_vol(i,j)*i, 2);
-		mat[j][j+1] = m_dt*(-1./2.*get_r(i)*i-1./4.*pow(get_vol(i,j)*i,2));
+		mat[1][j] = 0;
+		mat[0][j] = 0;
+		mat[2][j] = 0;
 	}
 	
 	return mat;

@@ -10,7 +10,8 @@ public:
 	solver_edp(model pde_model);
 	std::vector<double> solve_pde();
 	
-	std::vector<double> product_inverse(std::vector<std::vector<double>> mat, std::vector<double> d);
+	std::vector<double> product_inverse(std::vector<std::vector<double>> trig_mat, std::vector<double> d);
+	std::vector<double> trig_matmul(const std::vector<std::vector<double>>& trig_mat, const std::vector<double>& x);
 private:
 	model s_pde_model;
 	
