@@ -15,11 +15,16 @@ int main(int argc, char* argv[])
 	std::cout << pp.getname() << std::endl; // get the name
 	std::cout << pp.getpayoff()(90) << std::endl; //get the payoff function and evaluate it at 90
 	
+	std::vector<double> cond{90, 110}; 
 	
-	model model_pde(10, 10, 0.2, 0.05, 1./10., pp);
+	model model_pde(100., 0.2, 0.05, 1, 1./10., pp, cond);
+	
+	std::cout << "ok" << std::endl;
 	
 	std::vector<double> r(10);
 	std::vector<std::vector<double>> sigma(10, std::vector<double>(10));
+	
+	std::cout << "ok2" << std::endl;
 	
 	for(int i=0; i<10; ++i)
 	{	
@@ -30,11 +35,15 @@ int main(int argc, char* argv[])
 		r[i]=i*3./100.;
 	}
 	
-	model model_pde_r(10, 10, 0.2, r, 1./10., pp);
-	model model_pde_sigmar(10, 10, sigma, r, 1./10., pp);
-	model model_pde_sigma(10, 10, sigma, 0.05, 1./10., pp);
+	model model_pde_r(100., 0.2, r, 1, 1./10., pp, cond);
+	std::cout << "ok3" << std::endl;
+	model model_pde_sigmar(100., sigma, r, 1, 1./10., pp, cond);
+	std::cout << "ok4" << std::endl;
+	model model_pde_sigma(100., sigma, 0.05, 1, 1./10., pp, cond);
+	std::cout << "ok5" << std::endl;
 	
 	solver_edp solver_model(model_pde);
+	std::cout << "ok6" << std::endl;
 	
 	std::vector<double> sol(solver_model.solve_pde());
 	
