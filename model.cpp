@@ -4,55 +4,71 @@
 #include <iostream>
 #include "model.hpp"
 
-model::model(const double& S0, const int& n, const double& sigma, const double& r, const double& T, payoff& f, std::vector<double> conditions)
-	: m_sigma(sigma), m_r(r), m_n(n), m_f(f), m_initS(S0)
+model::model(const double& S0, const double& sigma, const double& r, const double& T, const double& dt, payoff& f, std::vector<double> conditions)
+	: m_dt(dt), m_T(T), m_f(f), m_initS(S0)
 	{
-		m_dt = 1.0 / 252.0;
-		m_Smin = exp(log(m_initS) - 5 * m_sigma * pow(T, 0.5));
-		m_Smax = exp(log(m_initS) + 5 * m_sigma * pow(T, 0.5));
-		m_dx = (m_Smax - m_Smin) * m_dt;
+		m_nt = std::round(T/dt);
 		
-		std::vector<double> c = { 0, 9999999 };
-		if (std::equal(conditions.begin(), conditions.end(), c.begin()))
+		for(int i=0;i<m_nx;++i)
 		{
-			conditions[0] = f.getpayoff()(m_Smin);
-			conditions[1] = f.getpayoff()(m_Smax);
-		}
-		
-		m_r.resize(m_t);
-		
-		for(int i=0;i<m_t;++i)
-		{
-			m_r[i] = r;
-		}
-	}
-
-		m_cdt = conditions;
-
-model::model(const int& n_x, const int& n_t, const std::vector<std::vector<double>>& sigma, const double& r, const double& dt, payoff& f)
-	: m_n(n_x), m_dt(dt), m_f(f), m_t(n_t)
-	{
-		m_r.resize(m_t);
-		
-		for(int i=0;i<m_t;++i)
-		{			
-			m_r[i] = r;
-		}
-	}
-
-model::model(const int& n_x, const int& n_t, const double& sigma, const std::vector<double>& r, const double& dt, payoff& f)
-	: m_r(r), m_n(n_x), m_dt(dt), m_f(f), m_t(n_t)
-	{
-		std::vector<std::vector<double>> m_sigma(m_n, std::vector<double>(m_n));
-		
-		for(int i=0;i<m_n;++i)
-		{
-			for(int j=0;j<m_n;++j)
+			for(int j=0;j<m_nx;++j)
 			{
 				m_sigma[i][j] = sigma;
 			}
 		}
+		
+		m_r.resize(m_nt);
+		
+		for(int i=0;i<m_nt;++i)
+		{
+			m_r[i] = r;
+		}
+		
+		m_cdt = get_conditions(conditions);
 	}
+	
+model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& r, const double& T, const double& dt, payoff& f, std::vector<double> conditions)
+	: m_dt(dt), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma)
+	{
+		m_nt = std::round(T/dt);
+		
+		m_r.resize(m_nt);
+		
+		for(int i=0;i<m_nt;++i)
+		{			
+			m_r[i] = r;
+		}
+		
+		m_cdt = get_conditions(conditions);
+	}
+
+model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const double& dt, payoff& f, std::vector<double> conditions)
+	: m_r(r), m_dt(dt), m_T(T), m_f(f), m_initS(S0)
+	{	
+		
+		m_nt = std::round(T/dt);
+		
+		std::vector<std::vector<double>> m_sigma(m_nx, std::vector<double>(m_nx));
+		
+		for(int i=0;i<m_nx;++i)
+		{
+			for(int j=0;j<m_nx;++j)
+			{
+				m_sigma[i][j] = sigma;
+			}
+		}
+		
+		m_cdt = get_conditions(conditions);
+	}
+
+model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const std::vector<double>& r, const double& T, const double& dt, payoff& f, std::vector<double> conditions)
+	: m_dt(dt), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r)
+{
+	
+	m_nt = std::round(T/dt);
+		
+	m_cdt = get_conditions(conditions);
+}
 
 double model::getS()
 {
@@ -63,13 +79,21 @@ double model::getS2()
 	return m_Smin;
 }
 
+double model::get_vol(const int& i, const int& j)
+{
+	return m_sigma[i][j];
+}
+
+double model::get_r(const int&i)
+{
+	return m_r[i];
+}
+
 std::vector<std::vector<double>> model::pde_matrix(const int& i)
 {	
-	std::vector<std::vector<double>> mat(m_n, std::vector<double>(m_n));
+	std::vector<std::vector<double>> mat(m_nx, std::vector<double>(m_nx));
 	
-	
-	
-	for(int j = 1; j<m_n-1; ++j)
+	for(int j = 1; j<m_nx-1; ++j)
 	{
 		mat[j][j] = 1-1./2.*get_r(i)*i-1./2.*pow(get_vol(i,j)*i,2);
 		mat[j][j-1] = 1./4.*pow(get_vol(i,j)*i,2);
@@ -81,9 +105,9 @@ std::vector<std::vector<double>> model::pde_matrix(const int& i)
 
 std::vector<std::vector<double>> model::pde_matrix_to_inverse(const int& i)
 {
-	std::vector<std::vector<double>> mat(m_n, std::vector<double>(m_n));
+	std::vector<std::vector<double>> mat(m_nx, std::vector<double>(m_nx));
 
-	for(int j = 1; j<m_n-1; ++j)
+	for(int j = 1; j<m_nx-1; ++j)
 	{
 		mat[j][j] = m_dt*(get_r(i) - 1./m_dt + 1./2.*get_r(i)*i+1./2.*pow(get_vol(i,j)*i, 2));
 		mat[j][j-1] = -1./4.*m_dt*pow(get_vol(i,j)*i, 2);
@@ -91,6 +115,25 @@ std::vector<std::vector<double>> model::pde_matrix_to_inverse(const int& i)
 	}
 	
 	return mat;
+}
+
+std::vector<double> model::get_conditions(std::vector<double> conditions)
+{
+	
+	m_Smin = exp(log(m_initS) - 5 * get_vol(m_nt-1,0) * pow(m_T, 0.5));
+	m_Smax = exp(log(m_initS) + 5 * get_vol(m_nt-1, m_nx-1) * pow(m_T, 0.5));
+	
+	m_dx = (m_Smax - m_Smin) * m_dt;
+	m_nx = int ((m_Smax - m_Smin)/m_dx);
+	
+	std::vector<double> c = { 0, 9999999 };
+	if (std::equal(conditions.begin(), conditions.end(), c.begin()))
+	{
+		conditions[0] = m_f.getpayoff()(m_Smin);
+		conditions[1] = m_f.getpayoff()(m_Smax);
+	}
+	
+	return conditions;
 }
 
 #endif
