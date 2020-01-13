@@ -28,6 +28,8 @@ int main(int argc, char* argv[])
 		r[i]=i*3./100.;
 	}
 	
+	
+	
 	model model_pde_r(100., 0.2, r, 1, 10, 10, pp, cond);
 
 	model model_pde_sigmar(100., sigma, r, 1, 10, 10, pp, cond);
@@ -37,34 +39,35 @@ int main(int argc, char* argv[])
 	solver_edp solver_model(model_pde);
 	
 	std::vector<double> sol(solver_model.solve_pde());
-	
+
 	std::vector<std::vector<double>> mat(3, std::vector<double>(3));
-	std::vector<double> d(3);
+	//std::vector<double> d(3);
 	
-	for(int i=0; i<3; i++)
-	{
-		d[i] = 3-i;
-	}
+	//for(int i=0; i<3; i++)
+	//{
+	//	d[i] = 3-i;
+	//}
 	
 	mat[0] = {0, 1, 2};
 	mat[1] = {1, 2, 3};
 	mat[2] = {-1, -2, 0};
 	
-	std::vector<double> test_inv(solver_model.product_inverse(mat, d));
 	
-	for(int i=0; i<test_inv.size();i++)
-	{
-		std::cout << test_inv[i] << ",";
-	}
+	//std::vector<double> test_inv(solver_model.product_inverse(mat, d));
 	
-	std::cout<< std::endl;
+	//for(int i=0; i<test_inv.size();i++)
+	//{
+	//	std::cout << test_inv[i] << ",";
+	//}
 	
-	std::vector<double> test_mul(solver_model.trig_matmul(mat, d));
+	//std::cout<< std::endl;
 	
-	for(int i=0; i<test_inv.size();i++)
-	{
-		std::cout << test_mul[i] << ",";
-	}
+	//std::vector<double> test_mul(solver_model.trig_matmul(mat, d));
+	
+	//for(int i=0; i<test_inv.size();i++)
+	//{
+	//	std::cout << test_mul[i] << ",";
+	//}
 	
 	return 0;
 }
