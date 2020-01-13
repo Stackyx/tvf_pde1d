@@ -21,27 +21,6 @@ std::vector<double> solver_edp::product_inverse(std::vector<std::vector<double>>
 	std::vector<double> c(trig_mat[2]);
 	
 	std::vector<double> x(trig_mat[0].size());
-
-/* 	for(int i=0; i<b.size(); ++i)
-	{
-		b[i] = mat[i][i];
-		
-		if (i==0)
-		{
-			a[i] = 0;
-			c[i] = mat[i][i+1];
-		}
-		else if(i==b.size()-1)
-		{
-			c[i] = 0;
-			a[i] = mat[i][i-1];
-		}
-		else
-		{
-			a[i] = mat[i][i-1];
-			c[i] = mat[i][i+1];
-		}
-	} */
 	
 	for(int i=1; i< trig_mat[0].size(); ++i)
 	{
