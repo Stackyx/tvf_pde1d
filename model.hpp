@@ -19,6 +19,7 @@ public:
 	double get_vol(const int& i);
 	double get_r(const int&i);
 	
+	
 private:
 	
 	std::vector<double> m_cdt;
@@ -36,7 +37,12 @@ private:
 	payoff m_f;
 	
 	std::vector<double> get_conditions(std::vector<double> conditions);
-
+	std::vector<double> getStrike();
+	std::string getName();
+	std::function<double(double)> model::getpayoff();
+	std::vector<std::vector<double>> getDirichelet();
 };
+
+std::vector<double> getRow(std::vector<std::vector<double>> mat, int i);
 
 #endif
