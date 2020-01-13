@@ -2,6 +2,8 @@
 #define solver_HPP
 #include <vector>
 #include <iostream>
+#include <algorithm>
+#include <numeric>
 #include "model.hpp"
 
 model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
@@ -125,12 +127,15 @@ std::vector<std::vector<double>> model::pde_matrix_to_inverse(const int& i)
 std::vector<double> model::get_conditions(std::vector<double> conditions)
 {
 	
-	m_Smin = exp(log(m_initS) - 5 * get_vol(m_nt-1) * pow(m_T, 0.5));
-	m_Smax = exp(log(m_initS) + 5 * get_vol(m_nt-1) * pow(m_T, 0.5));
+	double average_vol = accumulate( m_sigma.begin(), m_sigma.end(), 0.0)/m_sigma.size(); 
+	double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
+	
+	m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
+	m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
 	
 	m_dx = (m_Smax - m_Smin)/m_nx;
 	
-	std::vector<double> c = { 0, 9999999 };
+	std::vector<double> c = {0, 999999};
 	if (std::equal(conditions.begin(), conditions.end(), c.begin()))
 	{
 		conditions[0] = m_f.getpayoff()(m_Smin);
