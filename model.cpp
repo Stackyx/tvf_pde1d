@@ -6,7 +6,7 @@
 #include <numeric>
 #include "model.hpp"
 
-model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
+model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<std::vector<double>> conditions)
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0)
 	{
 		m_dt = T/n_t;
@@ -28,7 +28,7 @@ model::model(const double& S0, const double& sigma, const double& r, const doubl
 		m_cdt = get_conditions(conditions);
 	}
 	
-model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
+model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<std::vector<double>> conditions)
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma)
 	{
 		
@@ -44,7 +44,7 @@ model::model(const double& S0, const std::vector<double>& sigma, const double& r
 		m_cdt = get_conditions(conditions);
 	}
 
-model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
+model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<std::vector<double>> conditions)
 	: m_r(r), m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0)
 	{	
 		
@@ -60,7 +60,7 @@ model::model(const double& S0, const double& sigma, const std::vector<double>& r
 		m_cdt = get_conditions(conditions);
 	}
 
-model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
+model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<std::vector<double>> conditions)
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r)
 {
 	
@@ -171,8 +171,8 @@ std::vector<std::vector<double>> model::getDirichelet()
 
 		}
 		
-		uppercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_initS*exp(m_Smax + m_r[j]*m_dt*j));
-		lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_initS*exp(m_Smin + m_r[j]*m_dt*j));
+		uppercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_Smax);
+		lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_Smin);
 	}
 	
 	return {uppercdt, lowercdt};
@@ -180,7 +180,7 @@ std::vector<std::vector<double>> model::getDirichelet()
 }
 
 
-std::vector<double> model::get_conditions(std::vector<double> conditions)
+std::vector<std::vector<double>> model::get_conditions(std::vector<std::vector<double>> conditions)
 {
 	
 	double average_vol = accumulate(m_sigma.begin(), m_sigma.end(), 0.0)/m_sigma.size(); 
@@ -192,11 +192,12 @@ std::vector<double> model::get_conditions(std::vector<double> conditions)
 	m_dx = (m_Smax - m_Smin)/m_nx;
 	
 	
-	std::vector<double> c = {0, 999999};
-	if (std::equal(conditions.begin(), conditions.end(), c.begin()))
+	std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
+	if (std::equal(conditions[0].begin(), conditions[0].end(), c[0].begin()) && std::equal(conditions[1].begin(), conditions[1].end(), c[1].begin()))
 	{
-		conditions[0] = m_f.getpayoff()(m_Smin);
-		conditions[1] = m_f.getpayoff()(m_Smax);
+		int i; 
+		i = 0;
+
 	}
 	
 	return conditions;
