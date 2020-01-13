@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 	
 	std::vector<double> cond{90, 110}; 
 	
-	model model_pde(100., 0.2, 0.05, 1, 1./10., 1./2., pp, cond);
+	model model_pde(100., 0.2, 0.05, 1, 10, 10, pp, cond);
 	
 	std::vector<double> r(10);
 	std::vector<double> sigma(10);
@@ -28,11 +28,11 @@ int main(int argc, char* argv[])
 		r[i]=i*3./100.;
 	}
 	
-	model model_pde_r(100., 0.2, r, 1, 1./10., 1./2., pp, cond);
+	model model_pde_r(100., 0.2, r, 1, 10, 10, pp, cond);
 
-	model model_pde_sigmar(100., sigma, r, 1, 1./10., 1./2., pp, cond);
+	model model_pde_sigmar(100., sigma, r, 1, 10, 10, pp, cond);
 
-	model model_pde_sigma(100., sigma, 0.05, 1, 1./10., 1./2., pp, cond);
+	model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, pp, cond);
 	
 	solver_edp solver_model(model_pde);
 	
@@ -55,6 +55,15 @@ int main(int argc, char* argv[])
 	for(int i=0; i<test_inv.size();i++)
 	{
 		std::cout << test_inv[i] << ",";
+	}
+	
+	std::cout<< std::endl;
+	
+	std::vector<double> test_mul(solver_model.trig_matmul(mat, d));
+	
+	for(int i=0; i<test_inv.size();i++)
+	{
+		std::cout << test_mul[i] << ",";
 	}
 	
 	return 0;

@@ -47,13 +47,13 @@ std::vector<double> solver_edp::trig_matmul(const std::vector<std::vector<double
 	
 	std::vector<double> res(trig_mat[0]);
 	
-	for(int i=1;i<inf.size()-2;i++)
+	for(int i=1;i<inf.size()-1;i++)
 	{
 		res[i] = diag[i]*x[i] + inf[i]*x[i-1] + sup[i]*x[i+1];
 	}
 	
 	res[0] = diag[0]*x[0] + sup[0]*x[1];
-	res[res.size()-1] = diag[res.size()-1]*x[res.size()-1] + inf[res.size()-1]*x[res.size()-1];
+	res[res.size()-1] = diag[res.size()-1]*x[res.size()-1] + inf[res.size()-1]*x[res.size()-2];
 	
 	return res;
 }

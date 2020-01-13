@@ -4,10 +4,10 @@
 #include <iostream>
 #include "model.hpp"
 
-model::model(const double& S0, const double& sigma, const double& r, const double& T, const double& dt, const double& dx, payoff& f, std::vector<double> conditions)
-	: m_dt(dt), m_T(T), m_f(f), m_initS(S0), m_dx(dx)
+model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0)
 	{
-		m_nt = std::round(T/dt);
+		m_dt = T/n_t;
 		
 		m_sigma.resize(m_nt);
 		
@@ -26,11 +26,12 @@ model::model(const double& S0, const double& sigma, const double& r, const doubl
 		m_cdt = get_conditions(conditions);
 	}
 	
-model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const double& dt, const double& dx, payoff& f, std::vector<double> conditions)
-	: m_dt(dt), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_dx(dx)
+model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma)
 	{
-		m_nt = std::round(T/dt);
 		
+		m_dt = T/n_t;
+
 		m_r.resize(m_nt);
 		
 		for(int i=0;i<m_nt;++i)
@@ -41,11 +42,11 @@ model::model(const double& S0, const std::vector<double>& sigma, const double& r
 		m_cdt = get_conditions(conditions);
 	}
 
-model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const double& dt, const double& dx, payoff& f, std::vector<double> conditions)
-	: m_r(r), m_dt(dt), m_T(T), m_f(f), m_initS(S0), m_dx(dx)
+model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
+	: m_r(r), m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0)
 	{	
 		
-		m_nt = std::round(T/dt);
+		m_dt = T/n_t;
 		
 		m_sigma.resize(m_nt);
 		
@@ -57,11 +58,11 @@ model::model(const double& S0, const double& sigma, const std::vector<double>& r
 		m_cdt = get_conditions(conditions);
 	}
 
-model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const double& dt, const double& dx, payoff& f, std::vector<double> conditions)
-	: m_dt(dt), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r), m_dx(dx)
+model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r)
 {
 	
-	m_nt = std::round(T/dt);
+	m_dt = T/n_t;
 		
 	m_cdt = get_conditions(conditions);
 }
@@ -127,7 +128,7 @@ std::vector<double> model::get_conditions(std::vector<double> conditions)
 	m_Smin = exp(log(m_initS) - 5 * get_vol(m_nt-1) * pow(m_T, 0.5));
 	m_Smax = exp(log(m_initS) + 5 * get_vol(m_nt-1) * pow(m_T, 0.5));
 	
-	m_nx = std::round((m_Smax - m_Smin)/m_dx);
+	m_dx = (m_Smax - m_Smin)/m_nx;
 	
 	std::vector<double> c = { 0, 9999999 };
 	if (std::equal(conditions.begin(), conditions.end(), c.begin()))
