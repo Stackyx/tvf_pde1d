@@ -2,13 +2,14 @@
 #define MODEL_HPP
 #include "closed_form.hpp"
 
+
 class model
 {
 public:
-	model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions);
-	model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions);
-	model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions);
-	model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions);
+	model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions = {0, 999999});
+	model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions = {0, 999999});
+	model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions = {0, 999999});
+	model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<double> conditions = {0, 999999});
 
 	std::vector<std::vector<double>> pde_matrix(const int& i);
 	std::vector<std::vector<double>> pde_matrix_to_inverse(const int& i);
