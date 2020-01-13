@@ -17,33 +17,24 @@ int main(int argc, char* argv[])
 	
 	std::vector<double> cond{90, 110}; 
 	
-	model model_pde(100., 0.2, 0.05, 1, 1./10., pp, cond);
-	
-	std::cout << "ok" << std::endl;
+	model model_pde(100., 0.2, 0.05, 1, 1./10., 1./2., pp, cond);
 	
 	std::vector<double> r(10);
-	std::vector<std::vector<double>> sigma(10, std::vector<double>(10));
-	
-	std::cout << "ok2" << std::endl;
+	std::vector<double> sigma(10);
 	
 	for(int i=0; i<10; ++i)
 	{	
-		for (int j=0; j<10; ++j)
-		{
-			sigma[i][j] = i*1./100. + 0.2;
-		}
+		sigma[i] = i*2./100.+0.2;
 		r[i]=i*3./100.;
 	}
 	
-	model model_pde_r(100., 0.2, r, 1, 1./10., pp, cond);
-	std::cout << "ok3" << std::endl;
-	model model_pde_sigmar(100., sigma, r, 1, 1./10., pp, cond);
-	std::cout << "ok4" << std::endl;
-	model model_pde_sigma(100., sigma, 0.05, 1, 1./10., pp, cond);
-	std::cout << "ok5" << std::endl;
+	model model_pde_r(100., 0.2, r, 1, 1./10., 1./2., pp, cond);
+
+	model model_pde_sigmar(100., sigma, r, 1, 1./10., 1./2., pp, cond);
+
+	model model_pde_sigma(100., sigma, 0.05, 1, 1./10., 1./2., pp, cond);
 	
 	solver_edp solver_model(model_pde);
-	std::cout << "ok6" << std::endl;
 	
 	std::vector<double> sol(solver_model.solve_pde());
 	
@@ -55,15 +46,9 @@ int main(int argc, char* argv[])
 		d[i] = 3-i;
 	}
 	
-	mat[0][0] = 1;
-	mat[1][1] = 2;
-	mat[2][2] = 3;
-	
-	mat[0][1] = -1;
-	mat[1][2] = -2;
-	
-	mat[1][0] = 1;
-	mat[2][1] = 2;
+	mat[0] = {0, 1, 2};
+	mat[1] = {1, 2, 3};
+	mat[2] = {-1, -2, 0};
 	
 	std::vector<double> test_inv(solver_model.product_inverse(mat, d));
 	
