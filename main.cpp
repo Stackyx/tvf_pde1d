@@ -39,8 +39,8 @@ int main(int argc, char* argv[])
 	
 	std::vector<std::vector<double>> mat(model_pde.pde_matrix_to_inverse(0));
 	
-	double dx = model_pde.m_dx;
-	double sMin = model_pde.m_Smin;
+	double dx = model_pde.get_dx();
+	double sMin = model_pde.getSmin();
 
 	
 	for(int i=0; i<sol.size(); ++i)

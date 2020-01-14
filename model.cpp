@@ -70,11 +70,11 @@ model::model(const double& S0, const std::vector<double>& sigma, const std::vect
 	m_cdt = get_conditions(conditions, method);
 }
 
-double model::getS()
+double model::getSmax()
 {
 	return m_Smax;
 }
-double model::getS2()
+double model::getSmin()
 {
 	return m_Smin;
 }
@@ -88,6 +88,12 @@ double model::get_r(const int&i)
 {
 	return m_r[i];
 }
+
+double model::get_dx()
+{
+	return m_dx;
+}
+
 
 std::vector<std::vector<double>> model::pde_matrix(const int& i)
 {	
@@ -188,10 +194,9 @@ std::vector<std::vector<double>> model::getDirichelet()
 }
 
 
-std::vector<std::vector<double>> model::getNewmann()
+std::vector<std::vector<double>> model::getNeumann()
 {
 	//a modifié
-	
 	std::vector<double> cdt = getStrike();
 	std::vector<std::vector<double>> new_cdt;
 	std::vector<double> uppercdt;
@@ -242,7 +247,7 @@ std::vector<std::vector<double>> model::get_conditions(std::vector<std::vector<d
 		}
 		else if (CaseSensitiveIsEqual(method, "Newmann"))
 		{
-			std::vector<std::vector<double>> Nwn = getNewmann();
+			std::vector<std::vector<double>> Nwn = getNeumann();
 			conditions.resize(2, std::vector<double>(m_nt));
 			conditions = Nwn;
 		}
