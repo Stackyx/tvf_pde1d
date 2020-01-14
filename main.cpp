@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	std::cout << pp.getpayoff()(90) << std::endl; //get the payoff function and evaluate it at 90
 
 	
-	model model_pde(100., 0.2, 0.05, 1, 10, 10, pp);
+	model model_pde(100., 0.2, 0.05, 1, 10, 10, 1./2, pp);
 	
 	std::vector<double> r(10);
 	std::vector<double> sigma(10);
@@ -29,11 +29,11 @@ int main(int argc, char* argv[])
 	
 	
 	
-	model model_pde_r(100., 0.2, r, 1, 10, 10, pp);
+	model model_pde_r(100., 0.2, r, 1, 10, 10, 1./2, pp);
 
-	model model_pde_sigmar(100., sigma, r, 1, 10, 10, pp);
+	model model_pde_sigmar(100., sigma, r, 1, 10, 10, 1./2, pp);
 
-	model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, pp);
+	model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
 	
 	solver_edp solver_model(model_pde);
 	
