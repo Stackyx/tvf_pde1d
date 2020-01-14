@@ -25,6 +25,12 @@ model::model(const double& S0, const double& sigma, const double& r, const doubl
 			m_r[i] = r;
 		}
 		
+		double average_vol = accumulate(m_sigma.begin(), m_sigma.end(), 0.0)/m_sigma.size(); 
+		double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
+		m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
+		m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
+		m_dx = (m_Smax - m_Smin)/m_nx;
+	
 		m_cdt = get_conditions(conditions, method);
 	}
 	
@@ -33,7 +39,12 @@ model::model(const double& S0, const std::vector<double>& sigma, const double& r
 	{
 		
 		m_dt = T/n_t;
-
+		double average_vol = accumulate(m_sigma.begin(), m_sigma.end(), 0.0)/m_sigma.size(); 
+		double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
+		m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
+		m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
+		m_dx = (m_Smax - m_Smin)/m_nx;
+		
 		m_r.resize(m_nt);
 		
 		for(int i=0;i<m_nt;++i)
@@ -50,6 +61,12 @@ model::model(const double& S0, const double& sigma, const std::vector<double>& r
 		
 		m_dt = T/n_t;
 		
+		double average_vol = accumulate(m_sigma.begin(), m_sigma.end(), 0.0)/m_sigma.size(); 
+		double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());		
+		m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
+		m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
+		m_dx = (m_Smax - m_Smin)/m_nx;
+		
 		m_sigma.resize(m_nt);
 		
 		for(int i=0;i<m_nt;++i)
@@ -65,6 +82,55 @@ model::model(const double& S0, const std::vector<double>& sigma, const std::vect
 {
 	
 	m_dt = T/n_t;
+	
+	double average_vol = accumulate(m_sigma.begin(), m_sigma.end(), 0.0)/m_sigma.size(); 
+	double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
+	
+	m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
+	m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
+	m_dx = (m_Smax - m_Smin)/m_nx;
+		
+	m_cdt = get_conditions(conditions, method);
+}
+
+model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r), m_theta(theta)
+{
+	
+	m_dt = T/n_t;
+
+	double average_vol = accumulate(m_sigma.begin(), m_sigma.end(), 0.0)/m_sigma.size(); 
+	double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
+	
+	m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
+	m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
+	m_dx = (m_Smax - m_Smin)/m_nx;
+	
+	m_r.resize(m_nt);
+		
+	for(int i=0;i<m_nt;++i)
+	{			
+		m_r[i] = r;
+	}
+	
+	m_cdt = get_conditions(conditions, method);
+}
+
+model::model(const double& S0, const std::vector<const std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r), m_theta(theta)
+{
+	
+	m_dt = T/n_t;
+	
+	size_t size_row_sigma = (sizeof(m_sigma)/sizeof(m_sigma[0])));
+	double dx_sigma = (S_max_mat - S_min_mat)/size_row_sigma;
+	int i_initS = (m_initS - S_min_mat)/dx_sigma; 
+	
+	double average_vol_t = accumulate(getRow(m_sigma,i_initS).begin(), getRow(m_sigma,i_initS).end(), 0.0)/m_sigma[0].size(); 
+	
+	m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
+	m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
+	m_dx = (m_Smax - m_Smin)/m_nx;
 	
 	
 	m_cdt = get_conditions(conditions, method);
@@ -182,16 +248,7 @@ std::vector<std::vector<double>> model::getNeumann()
 
 
 std::vector<std::vector<double>> model::get_conditions(std::vector<std::vector<double>> conditions, std::string method)
-{
-	
-	double average_vol = accumulate(m_sigma.begin(), m_sigma.end(), 0.0)/m_sigma.size(); 
-	double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
-	
-	m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
-	m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
-	
-	m_dx = (m_Smax - m_Smin)/m_nx;
-	
+{	
 	
 	std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
 	if (std::equal(conditions[0].begin(), conditions[0].end(), c[0].begin()) && std::equal(conditions[1].begin(), conditions[1].end(), c[1].begin()))
