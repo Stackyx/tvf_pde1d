@@ -13,7 +13,7 @@ std::vector<double> solver_edp::solve_pde()
 	std::vector<std::vector<double>> boundaries(s_pde_model.m_cdt);
 	
 	std::vector<double> res(s_pde_model.m_nx);
-	res[0] = boundaries[0][s_pde_model.m_nt-1-1];
+	res[0] = boundaries[0][s_pde_model.m_nt-1];
 	res[s_pde_model.m_nx-1] = boundaries[1][s_pde_model.m_nt-1];
 	
 	for(int i=1; i< res.size()-1; ++i)
@@ -23,29 +23,10 @@ std::vector<double> solver_edp::solve_pde()
 
 	for(int i = s_pde_model.m_nt - 1; i > 0; --i)
 	{
-		std::vector<double> a(trig_matmul(s_pde_model.pde_matrix(i), res));
-		
-/* 		if (i == s_pde_model.m_nt-2)
-		{
-			for (int i=0; i < s_pde_model.m_nx;++i)
-			{
-				std::cout << a[i] << std::endl;
-			}
-		} */
-		res = product_inverse(s_pde_model.pde_matrix_to_inverse(i), a); 
+		res = product_inverse(s_pde_model.pde_matrix_to_inverse(i), trig_matmul(s_pde_model.pde_matrix(i), res)); 
 		
 		res[0] = boundaries[0][i-1];
 		res[s_pde_model.m_nx-1] = boundaries[1][i-1];
-		
-/* 		
-		if (i == s_pde_model.m_nt-2)
-		{
-			std::cout << "----------" << std::endl;
-			for (int i=0; i < s_pde_model.m_nx;++i)
-			{
-				std::cout << res[i] << std::endl;
-			}
-		} */
 	}
 
 	return res;
@@ -65,7 +46,6 @@ std::vector<double> solver_edp::product_inverse(std::vector<std::vector<double>>
 		w = a[i]/b[i-1];
 		b[i] = b[i] - w*c[i-1];
 		d[i] = d[i] - w*d[i-1];
-		//std::cout << d[i] << std::endl;
 	}
 	
 	x[trig_mat[0].size()-1] = d[trig_mat[0].size()-1]/b[trig_mat[0].size()-1];
