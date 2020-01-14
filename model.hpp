@@ -25,6 +25,7 @@ public:
 	double m_T;
 	double m_Smin;
 	double m_dx;
+	double m_Smax;
 	
 	int m_nt;
 	int m_nx;
@@ -33,7 +34,6 @@ private:
 	
 	std::vector<std::vector<double>> m_cdt;
 	double m_initS;
-	double m_Smax;
 	std::vector<double> m_sigma;
 	std::vector<double> m_r;
 

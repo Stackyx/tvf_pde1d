@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	std::cout << pp.getpayoff()(110) << std::endl; //get the payoff function and evaluate it at 90
 
 	
-	model model_pde(100., 0.2, 0.05, 1, 252, 300, 1./2, pp);
+	model model_pde(100., 0.2, 0.02, 1, 252, 300, 1, pp);
 	
 	std::vector<double> r(10);
 	std::vector<double> sigma(10);
@@ -37,17 +37,17 @@ int main(int argc, char* argv[])
 	
 	std::vector<double> sol(solver_model.solve_pde());
 	
-	std::vector<std::vector<double>> mat(model_pde.pde_matrix(0));
+	std::vector<std::vector<double>> mat(model_pde.pde_matrix_to_inverse(0));
 	
-	for (int i=0; i<mat[0].size();++i)
+/* 	for (int i=0; i<mat[0].size();++i)
 	{
 		std::cout << mat[0][i] << " " << mat[1][i] << " " << mat[2][i] << std::endl;
-	}
+	} */
 	
 /* 	for(int i=0; i<sol.size(); ++i)
 	{
 		std::cout << sol[i] << std::endl;
-	}
-	 */
+	} */
+	
 	return 0;
 }
