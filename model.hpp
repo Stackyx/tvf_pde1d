@@ -6,14 +6,15 @@
 class model
 {
 public:
-	model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
-	model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
-	model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
-	model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
+	model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}}, std::string method = "Dirichelet");
+	model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}}, std::string method = "Dirichelet");
+	model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}}, std::string method = "Dirichelet");
+	model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}}, std::string method = "Dirichelet");
 
 	std::vector<std::vector<double>> pde_matrix(const int& i);
 	std::vector<std::vector<double>> pde_matrix_to_inverse(const int& i);
 	std::vector<std::vector<double>> getDirichelet();
+	std::vector<std::vector<double>> getNewmann();
 	
 	payoff m_f;
 	
@@ -41,7 +42,7 @@ private:
 	
 	double m_theta;
 	
-	std::vector<std::vector<double>> get_conditions(std::vector<std::vector<double>> conditions);
+	std::vector<std::vector<double>> get_conditions(std::vector<std::vector<double>> conditions, std::string method);
 	std::vector<double> getStrike();
 	std::string getName();
 	std::function<double(double)> model::getpayoff();
