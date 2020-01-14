@@ -14,24 +14,21 @@ public:
 	std::vector<std::vector<double>> pde_matrix(const int& i);
 	std::vector<std::vector<double>> pde_matrix_to_inverse(const int& i);
 	std::vector<std::vector<double>> getDirichelet();
-	std::vector<std::vector<double>> getNewmann();
+	std::vector<std::vector<double>> getNeumann();
 	
 	payoff m_f;
 	
-	double getS();
-	double getS2();
+	double getSmax();
+	double getSmin();
 	double get_vol(const int& i);
 	double get_r(const int&i);
+	double get_dx();
 	
-	double m_T;
-	double m_Smin;
-	double m_dx;
-	double m_Smax;
-	
-	int m_nt;
-	int m_nx;
+
 	
 private:
+	
+	friend class solver_edp;
 	
 	std::vector<std::vector<double>> m_cdt;
 	double m_initS;
@@ -39,7 +36,12 @@ private:
 	std::vector<double> m_r;
 
 	double m_dt;
-	
+	double m_T;
+	double m_Smin;
+	double m_dx;
+	double m_Smax;
+	int m_nt;
+	int m_nx;
 	double m_theta;
 	
 	std::vector<std::vector<double>> get_conditions(std::vector<std::vector<double>> conditions, std::string method);
