@@ -10,13 +10,13 @@ int main(int argc, char* argv[])
 	// Exemple d'utilisation de la class payoff
 
 	//dauphine::payoff pp = dauphine::payoff("s", { 95 , 105 }, [](double d2) {return d2 * 2; }); //if the client wants to input his own function
-	payoff pp = payoff("strangle", { 95 , 105 }); //if we want to use the function already input in the class
+	payoff pp = payoff("call", {100}); //if we want to use the function already input in the class
 	std::cout << pp.getparameters()[0] << std::endl; // get the parameters
 	std::cout << pp.getname() << std::endl; // get the name
-	std::cout << pp.getpayoff()(90) << std::endl; //get the payoff function and evaluate it at 90
+	std::cout << pp.getpayoff()(110) << std::endl; //get the payoff function and evaluate it at 90
 
 	
-	model model_pde(100., 0.2, 0.05, 1, 10, 10, 1./2, pp);
+	model model_pde(100., 0.2, 0.05, 1, 252, 300, 1./2, pp);
 	
 	std::vector<double> r(10);
 	std::vector<double> sigma(10);
@@ -27,8 +27,6 @@ int main(int argc, char* argv[])
 		r[i]=i*3./100.;
 	}
 	
-	
-	
 	model model_pde_r(100., 0.2, r, 1, 10, 10, 1./2, pp);
 
 	model model_pde_sigmar(100., sigma, r, 1, 10, 10, 1./2, pp);
@@ -38,35 +36,18 @@ int main(int argc, char* argv[])
 	solver_edp solver_model(model_pde);
 	
 	std::vector<double> sol(solver_model.solve_pde());
-
-	std::vector<std::vector<double>> mat(3, std::vector<double>(3));
-	//std::vector<double> d(3);
 	
-	//for(int i=0; i<3; i++)
-	//{
-	//	d[i] = 3-i;
-	//}
+	std::vector<std::vector<double>> mat(model_pde.pde_matrix(0));
 	
-	mat[0] = {0, 1, 2};
-	mat[1] = {1, 2, 3};
-	mat[2] = {-1, -2, 0};
+	for (int i=0; i<mat[0].size();++i)
+	{
+		std::cout << mat[0][i] << " " << mat[1][i] << " " << mat[2][i] << std::endl;
+	}
 	
-	
-	//std::vector<double> test_inv(solver_model.product_inverse(mat, d));
-	
-	//for(int i=0; i<test_inv.size();i++)
-	//{
-	//	std::cout << test_inv[i] << ",";
-	//}
-	
-	//std::cout<< std::endl;
-	
-	//std::vector<double> test_mul(solver_model.trig_matmul(mat, d));
-	
-	//for(int i=0; i<test_inv.size();i++)
-	//{
-	//	std::cout << test_mul[i] << ",";
-	//}
-	
+/* 	for(int i=0; i<sol.size(); ++i)
+	{
+		std::cout << sol[i] << std::endl;
+	}
+	 */
 	return 0;
 }

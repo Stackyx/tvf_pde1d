@@ -9,8 +9,28 @@ solver_edp::solver_edp(model pde_model)
 
 std::vector<double> solver_edp::solve_pde()
 {	
-	std::vector<double> a;
-	return a;
+	double tau = s_pde_model.m_T;
+	std::vector<std::vector<double>> boundaries(s_pde_model.getDirichelet());
+	
+	std::vector<double> res(s_pde_model.m_nx);
+	res[0] = boundaries[0][s_pde_model.m_nt-1-1];
+	res[s_pde_model.m_nx-1] = boundaries[1][s_pde_model.m_nt-1];
+	
+	for(int i=1; i< res.size()-1; ++i)
+	{
+		res[i] = s_pde_model.m_f.getpayoff()(s_pde_model.m_Smin+i*s_pde_model.m_dx);
+	}
+
+	for(int i = s_pde_model.m_nt - 1; i > 0; --i)
+	{
+		std::vector<double> a(trig_matmul(s_pde_model.pde_matrix(i), res));
+		
+		res = product_inverse(s_pde_model.pde_matrix_to_inverse(i), a); 
+		res[0] = boundaries[0][i-1];
+		res[s_pde_model.m_nx-1] = boundaries[1][i-1];
+	}
+
+	return res;
 }
 
 std::vector<double> solver_edp::product_inverse(std::vector<std::vector<double>> trig_mat, std::vector<double> d)
