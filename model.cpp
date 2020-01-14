@@ -177,8 +177,8 @@ std::vector<std::vector<double>> model::getDirichelet()
 
 		}
 		
-		uppercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_initS*exp(m_Smax));
-		lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_initS*exp(m_Smin));
+		uppercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smax));
+		lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smin));
 		
 	}
 	
@@ -205,7 +205,6 @@ std::vector<std::vector<double>> model::get_conditions(std::vector<std::vector<d
 		std::vector<std::vector<double>> drchlt = getDirichelet();
 		conditions.resize(2, std::vector<double>(m_nt));
 		conditions = drchlt;
-
 	}
 	
 	return conditions;

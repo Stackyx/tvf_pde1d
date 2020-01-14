@@ -39,15 +39,14 @@ int main(int argc, char* argv[])
 	
 	std::vector<std::vector<double>> mat(model_pde.pde_matrix_to_inverse(0));
 	
-/* 	for (int i=0; i<mat[0].size();++i)
-	{
-		std::cout << mat[0][i] << " " << mat[1][i] << " " << mat[2][i] << std::endl;
-	} */
+	double dx = model_pde.m_dx;
+	double sMin = model_pde.m_Smin;
+
 	
-/* 	for(int i=0; i<sol.size(); ++i)
+	for(int i=0; i<sol.size(); ++i)
 	{
-		std::cout << sol[i] << std::endl;
-	} */
+		std::cout << exp(sMin+i*dx) << ", " << sol[i] << std::endl;
+	}
 	
 	return 0;
 }
