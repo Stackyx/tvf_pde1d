@@ -37,8 +37,6 @@ int main(int argc, char* argv[])
 	
 	std::vector<double> sol(solver_model.solve_pde());
 	
-	std::vector<std::vector<double>> mat(model_pde.pde_matrix_to_inverse(0));
-	
 	double dx = model_pde.get_dx();
 	double sMin = model_pde.getSmin();
 
