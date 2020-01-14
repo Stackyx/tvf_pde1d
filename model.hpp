@@ -11,8 +11,6 @@ public:
 	model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}}, std::string method = "Dirichelet");
 	model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}}, std::string method = "Dirichelet");
 
-	void pde_matrix(std::vector<std::vector<double>>& mat, const int& i);
-	void pde_matrix_to_inverse(std::vector<std::vector<double>>& mat, const int& i);
 	std::vector<std::vector<double>> getDirichelet();
 	std::vector<std::vector<double>> getNeumann();
 	
@@ -21,8 +19,6 @@ public:
 	double get_vol(const int& i);
 	double get_r(const int&i);
 	double get_dx();
-	
-
 	
 private:
 	

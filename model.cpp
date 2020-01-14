@@ -94,44 +94,6 @@ double model::get_dx()
 	return m_dx;
 }
 
-
-void model::pde_matrix(std::vector<std::vector<double>>& mat, const int& i)
-{	
-	mat[1][0] = 1;
-	mat[1][m_nx-1] = 1;
-	
-	double sigma(get_vol(i));
-	double r(get_r(i));
-	
-	for(int j = 1; j<m_nx-1; ++j)
-	{
-		mat[1][j] = 1 - m_dt*(1-m_theta)*(pow(sigma/m_dx,2) + r);
-		mat[0][j] = m_dt*(1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx + pow(sigma,2)/2. - r);
-		mat[2][j] = m_dt*(1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx - pow(sigma,2)/2. + r);
-	}
-
-}
-
-void model::pde_matrix_to_inverse(std::vector<std::vector<double>>& mat, const int& i)
-{
-	
-	// Conditions initiales et terminales sur X :
-	
-	mat[1][0] = 1;
-	mat[1][m_nx-1] = 1;
-	
-	double sigma(get_vol(i));
-	double r(get_r(i));
-	
-	for(int j = 1; j<m_nx-1; ++j)
-	{		
-		mat[1][j] = 1+m_dt*m_theta*(pow(sigma/m_dx,2) + r);
-		mat[0][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx - pow(sigma,2)/2. + r);
-		mat[2][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx + pow(sigma,2)/2. - r);
-	}
-
-}
-
 std::vector<double> model::getStrike()
 {
 	return m_f.getparameters();
