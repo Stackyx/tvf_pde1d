@@ -100,9 +100,9 @@ std::vector<std::vector<double>> model::pde_matrix(const int& i)
 	
 	for(int j = 1; j<m_nx-1; ++j)
 	{
-		mat[1][j] = 1 - (1-m_theta)*(pow(sigma/m_dx,2) + r);
-		mat[0][j] = (1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx + pow(sigma,2)/2 - r);
-		mat[2][j] = (1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx - pow(sigma,2)/2 + r);
+		mat[1][j] = 1 - m_dt*(1-m_theta)*(pow(sigma/m_dx,2) + r);
+		mat[0][j] = m_dt*(1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx + pow(sigma,2)/2. - r);
+		mat[2][j] = m_dt*(1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx - pow(sigma,2)/2. + r);
 	}
 	
 	return mat;
@@ -123,8 +123,8 @@ std::vector<std::vector<double>> model::pde_matrix_to_inverse(const int& i)
 	for(int j = 1; j<m_nx-1; ++j)
 	{		
 		mat[1][j] = 1+m_dt*m_theta*(pow(sigma/m_dx,2) + r);
-		mat[0][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx - pow(sigma,2)/2 + r);
-		mat[2][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx + pow(sigma,2)/2 - r);
+		mat[0][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx - pow(sigma,2)/2. + r);
+		mat[2][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx + pow(sigma,2)/2. - r);
 	}
 	
 	return mat;
