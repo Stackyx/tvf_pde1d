@@ -7,18 +7,18 @@ solver_edp::solver_edp(model pde_model)
 {
 }
 
-std::vector<double> solver_edp::solve_pde()
+void solver_edp::solve_pde()
 {	
 	std::vector<std::vector<double>> boundaries(s_pde_model.m_cdt);
 	
-	std::vector<double> res(s_pde_model.m_nx);
+	std::vector<double> sol(s_pde_model.m_nx);
 	std::vector<double> vect(s_pde_model.m_nx);
 	
 	double sigma;
 	double r;
 	
-	res[0] = boundaries[0][s_pde_model.m_nt-1];
-	res[s_pde_model.m_nx-1] = boundaries[1][s_pde_model.m_nt-1];
+	sol[0] = boundaries[0][s_pde_model.m_nt-1];
+	sol[s_pde_model.m_nx-1] = boundaries[1][s_pde_model.m_nt-1];
 	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_pde_model.m_nx));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_pde_model.m_nx));
@@ -37,14 +37,23 @@ std::vector<double> solver_edp::solve_pde()
 		pde_matrix_to_inverse(pde_mat_inv, sigma, r, s_pde_model.m_theta, s_pde_model.m_dt, s_pde_model.m_dx, s_pde_model.m_nx, i);
 		pde_matrix(pde_mat, sigma, r, s_pde_model.m_theta, s_pde_model.m_dt, s_pde_model.m_dx, s_pde_model.m_nx, i);
 		
-		trig_matmul(vect, pde_mat, res);
-		product_inverse(res, pde_mat_inv, vect); 
+		trig_matmul(vect, pde_mat, sol);
+		product_inverse(sol, pde_mat_inv, vect); 
 		
-		res[0] = boundaries[0][i-1];
-		res[s_pde_model.m_nx-1] = boundaries[1][i-1];
+		sol[0] = boundaries[0][i-1];
+		sol[s_pde_model.m_nx-1] = boundaries[1][i-1];
 	}
-
-	return res;
+	
+	delta.resize(sol.size()-2);
+	gamma.resize(sol.size()-2);
+	
+	for(int i=0; i < sol.size(); ++i)
+	{
+		delta[i] = (sol[i+1] - sol[i-1])/s_pde_model.m_dx;
+		gamma[i] = (sol[i+1] - 2*sol[i] + sol[i-1])/pow(s_pde_model.m_dx, 2)
+	}
+	
+	solution = res;
 }
 
 void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, const double& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)
