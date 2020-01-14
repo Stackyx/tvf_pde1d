@@ -13,36 +13,39 @@ public:
 
 	std::vector<std::vector<double>> pde_matrix(const int& i);
 	std::vector<std::vector<double>> pde_matrix_to_inverse(const int& i);
+	std::vector<std::vector<double>> getDirichelet();
+	
+	payoff m_f;
 	
 	double getS();
 	double getS2();
 	double get_vol(const int& i);
 	double get_r(const int&i);
 	
+	double m_T;
+	double m_Smin;
+	double m_dx;
+	
+	int m_nt;
+	int m_nx;
 	
 private:
 	
 	std::vector<std::vector<double>> m_cdt;
 	double m_initS;
-	double m_Smin;
 	double m_Smax;
 	std::vector<double> m_sigma;
 	std::vector<double> m_r;
-	double m_T;
-	double m_dx;
+
 	double m_dt;
-	int m_nx;
-	int m_nt;
 	
 	double m_theta;
-	
-	payoff m_f;
 	
 	std::vector<std::vector<double>> get_conditions(std::vector<std::vector<double>> conditions);
 	std::vector<double> getStrike();
 	std::string getName();
 	std::function<double(double)> model::getpayoff();
-	std::vector<std::vector<double>> getDirichelet();
+
 };
 
 std::vector<double> getRow(std::vector<std::vector<double>> mat, int i);

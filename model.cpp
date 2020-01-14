@@ -95,15 +95,11 @@ std::vector<std::vector<double>> model::pde_matrix(const int& i)
 	mat[1][0] = 1;
 	mat[1][m_nx-1] = 1;
 	
-	double sigma;
-	double r;
+	double sigma(get_vol(i));
+	double r(get_r(i));
 	
 	for(int j = 1; j<m_nx-2; ++j)
 	{
-		
-		sigma = get_vol(j);
-		r = get_r(j);
-		
 		mat[1][j] = 1 - (1-m_theta)*(pow(sigma/m_dx,2) + r);
 		mat[0][j] = (1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx + pow(sigma,2)/2 - r);
 		mat[2][j] = (1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx - pow(sigma,2)/2 + r);
@@ -121,14 +117,11 @@ std::vector<std::vector<double>> model::pde_matrix_to_inverse(const int& i)
 	mat[1][0] = 1;
 	mat[1][m_nx-1] = 1;
 	
-	double sigma;
-	double r;
+	double sigma(get_vol(i));
+	double r(get_r(i));
 	
 	for(int j = 1; j<m_nx-2; ++j)
-	{
-		sigma = get_vol(j);
-		r = get_r(j);
-		
+	{		
 		mat[1][j] = 1+m_dt*m_theta*(pow(sigma/m_dx,2) + r);
 		mat[0][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx - pow(sigma,2)/2 + r);
 		mat[2][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx + pow(sigma,2)/2 - r);
@@ -188,7 +181,7 @@ std::vector<std::vector<double>> model::getDirichelet()
 		lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_Smin);
 	}
 	
-	return {uppercdt, lowercdt};
+	return {lowercdt, uppercdt};
 	
 }
 
