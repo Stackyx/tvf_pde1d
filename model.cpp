@@ -6,8 +6,8 @@
 #include <numeric>
 #include "model.hpp"
 
-model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<std::vector<double>> conditions)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0)
+model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
 	{
 		m_dt = T/n_t;
 		
@@ -28,8 +28,8 @@ model::model(const double& S0, const double& sigma, const double& r, const doubl
 		m_cdt = get_conditions(conditions);
 	}
 	
-model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<std::vector<double>> conditions)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma)
+model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_theta(theta)
 	{
 		
 		m_dt = T/n_t;
@@ -44,8 +44,8 @@ model::model(const double& S0, const std::vector<double>& sigma, const double& r
 		m_cdt = get_conditions(conditions);
 	}
 
-model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<std::vector<double>> conditions)
-	: m_r(r), m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0)
+model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions)
+	: m_r(r), m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
 	{	
 		
 		m_dt = T/n_t;
@@ -60,8 +60,8 @@ model::model(const double& S0, const double& sigma, const std::vector<double>& r
 		m_cdt = get_conditions(conditions);
 	}
 
-model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, payoff& f, std::vector<std::vector<double>> conditions)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r)
+model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r), m_theta(theta)
 {
 	
 	m_dt = T/n_t;
@@ -93,14 +93,20 @@ std::vector<std::vector<double>> model::pde_matrix(const int& i)
 	std::vector<std::vector<double>> mat(3, std::vector<double>(m_nx));
 	
 	mat[1][0] = 1;
-	mat[0][0] = 0;
-	mat[2][m_nx-2] = 0;
+	mat[1][m_nx-1] = 1;
+	
+	double sigma;
+	double r;
 	
 	for(int j = 1; j<m_nx-2; ++j)
 	{
-		mat[1][j] = 0;
-		mat[0][j] = 0;
-		mat[2][j] = 0;
+		
+		sigma = get_vol(j);
+		r = get_r(j);
+		
+		mat[1][j] = 1 - (1-m_theta)*(pow(sigma/m_dx,2) + r);
+		mat[0][j] = (1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx + pow(sigma,2)/2 - r);
+		mat[2][j] = (1-m_theta)/(2*m_dx)*(pow(sigma,2)/m_dx - pow(sigma,2)/2 + r);
 	}
 	
 	return mat;
@@ -110,15 +116,22 @@ std::vector<std::vector<double>> model::pde_matrix_to_inverse(const int& i)
 {
 	std::vector<std::vector<double>> mat(3, std::vector<double>(m_nx));
 	
+	// Conditions initiales et terminales sur X :
+	
 	mat[1][0] = 1;
-	mat[0][0] = 0;
-	mat[2][m_nx-2] = 0;
+	mat[1][m_nx-1] = 1;
+	
+	double sigma;
+	double r;
 	
 	for(int j = 1; j<m_nx-2; ++j)
 	{
-		mat[1][j] = 0;
-		mat[0][j] = 0;
-		mat[2][j] = 0;
+		sigma = get_vol(j);
+		r = get_r(j);
+		
+		mat[1][j] = 1+m_dt*m_theta*(pow(sigma/m_dx,2) + r);
+		mat[0][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx - pow(sigma,2)/2 + r);
+		mat[2][j] = m_dt*m_theta/(2*m_dx)*(-pow(sigma,2)/m_dx + pow(sigma,2)/2 - r);
 	}
 	
 	return mat;
@@ -167,13 +180,12 @@ std::vector<std::vector<double>> model::getDirichelet()
 	{
 		for (int i = 0; i<getStrike().size(); ++i)
 		{
-			new_cdt[j][i] = cdt[i] * exp(- m_r[j] * (m_dt*j));
+			new_cdt[j][i] = cdt[i] * exp(- m_r[j] * (m_T - m_dt*j));
 
 		}
 		
-		
-		uppercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_initS*exp(m_Smax));
-lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_initS*exp(m_Smin));
+		uppercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_Smax);
+		lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(m_Smin);
 	}
 	
 	return {uppercdt, lowercdt};
@@ -196,10 +208,8 @@ std::vector<std::vector<double>> model::get_conditions(std::vector<std::vector<d
 	std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
 	if (std::equal(conditions[0].begin(), conditions[0].end(), c[0].begin()) && std::equal(conditions[1].begin(), conditions[1].end(), c[1].begin()))
 	{
-
-		std::vector<std::vector<double>> drchlt = getDirichelet();
-		conditions.resize(2, std::vector<double>(m_nt));
-		conditions = drchlt;
+		int i; 
+		i = 0;
 
 	}
 	
