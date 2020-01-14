@@ -10,7 +10,7 @@ solver_edp::solver_edp(model pde_model)
 std::vector<double> solver_edp::solve_pde()
 {	
 	double tau = s_pde_model.m_T;
-	std::vector<std::vector<double>> boundaries(s_pde_model.getDirichelet());
+	std::vector<std::vector<double>> boundaries(s_pde_model.m_cdt);
 	
 	std::vector<double> res(s_pde_model.m_nx);
 	res[0] = boundaries[0][s_pde_model.m_nt-1-1];
@@ -96,3 +96,38 @@ std::vector<double> solver_edp::trig_matmul(const std::vector<std::vector<double
 	
 	return res;
 }
+
+greeks::greeks(solver_edp rst_solver)
+	:m_solver(rst_solver)
+{
+	
+}
+
+std::vector<double> getDelta()
+{
+	return 
+}
+
+
+std::vector<double> getGamma()
+{
+	
+	return 
+}
+std::vector<double> getTheta()
+{
+	return 
+}
+
+std::vector<double> getVega()
+{
+	double bump = 0.01;
+	std::vector<double> bump_vol = m_solver.m_sigma + bump;
+	
+	model bumpvol_model = model(m_solver.m_initS, bump_vol, m_solver.m_r, m_solver.m_T, m_solver.m_nt, m_solver.m_nx, m_solver.m_theta, m_solver.m_f, m_solver.m_cdt, m_solver.m_method);
+	return 
+}
+
+
+
+

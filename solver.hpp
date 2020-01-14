@@ -17,4 +17,18 @@ private:
 	
 };
 
+
+class greeks
+{
+public:
+	greeks(solver_edp rst_solver);
+	
+	std::vector<double> getDelta();
+	std::vector<double> getGamma();
+	std::vector<double> getTheta();
+	std::vector<double> getVega();
+	
+private:
+	solver_edp m_solver;
+}
 #endif

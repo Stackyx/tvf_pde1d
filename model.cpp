@@ -7,7 +7,7 @@
 #include "model.hpp"
 
 model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta), m_method(method)
 	{
 		m_dt = T/n_t;
 		

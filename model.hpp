@@ -16,8 +16,6 @@ public:
 	std::vector<std::vector<double>> getDirichelet();
 	std::vector<std::vector<double>> getNeumann();
 	
-	payoff m_f;
-	
 	double getSmax();
 	double getSmin();
 	double get_vol(const int& i);
@@ -43,6 +41,8 @@ private:
 	int m_nt;
 	int m_nx;
 	double m_theta;
+	std::string m_method;
+	payoff m_f;
 	
 	std::vector<std::vector<double>> get_conditions(std::vector<std::vector<double>> conditions, std::string method);
 	std::vector<double> getStrike();
