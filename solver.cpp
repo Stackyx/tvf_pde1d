@@ -22,9 +22,9 @@ void solver_edp::solve_pde()
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_pde_model.m_nx));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_pde_model.m_nx));
 	
-	for(int i=1; i< res.size()-1; ++i)
+	for(int i=1; i< sol.size()-1; ++i)
 	{
-		res[i] = s_pde_model.m_f.getpayoff()(exp(s_pde_model.m_Smin+i*s_pde_model.m_dx));
+		sol[i] = s_pde_model.m_f.getpayoff()(exp(s_pde_model.m_Smin+i*s_pde_model.m_dx));
 	}
 
 	for(int i = s_pde_model.m_nt - 1; i > 0; --i)
@@ -43,16 +43,17 @@ void solver_edp::solve_pde()
 		sol[s_pde_model.m_nx-1] = boundaries[1][i-1];
 	}
 	
-	delta.resize(sol.size()-2);
-	gamma.resize(sol.size()-2);
 	
-	for(int i=0; i < sol.size(); ++i)
-	{
-		delta[i] = (sol[i+1] - sol[i-1])/s_pde_model.m_dx;
-		gamma[i] = (sol[i+1] - 2*sol[i] + sol[i-1])/pow(s_pde_model.m_dx, 2);
-	}
+	// delta.resize(sol.size()-2);
+	// gamma.resize(sol.size()-2);
 	
-	solution = res;
+	// for(int i=0; i < sol.size(); ++i)
+	// {
+		// delta[i] = (sol[i+1] - sol[i-1])/s_pde_model.m_dx;
+		// gamma[i] = (sol[i+1] - 2*sol[i] + sol[i-1])/pow(s_pde_model.m_dx, 2);
+	// }
+	
+	solution = sol;
 }
 
 void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)

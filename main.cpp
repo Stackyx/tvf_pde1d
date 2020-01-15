@@ -27,15 +27,19 @@ int main(int argc, char* argv[])
 		r[i]=i*3./100.;
 	}
 	
-	model model_pde_r(100., 0.2, r, 1, 10, 10, 1./2, pp);
+	//model model_pde_r(100., 0.2, r, 1, 10, 10, 1./2, pp);
 
-	model model_pde_sigmar(100., sigma, r, 1, 10, 10, 1./2, pp);
+//	model model_pde_sigmar(100., sigma, r, 1, 10, 10, 1./2, pp);
 
-	model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
+	//model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
 	
 	solver_edp solver_model(model_pde);
+	solver_model.solve_pde();
+	std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
+	std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
+	std::cout<< model_pde.get_vol_col(0).size() << std::endl;
 	
-	std::vector<double> sol(solver_model.solve_pde());
+	std::vector<double> sol(solver_model.solution);
 	
 	double dx = model_pde.get_dx();
 	double sMin = model_pde.getSmin();
@@ -45,6 +49,7 @@ int main(int argc, char* argv[])
 	{
 		std::cout << exp(sMin+i*dx) << ", " << sol[i] << std::endl;
 	}
+
 	
 	
 	return 0;
