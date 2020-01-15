@@ -46,5 +46,6 @@ int main(int argc, char* argv[])
 		std::cout << exp(sMin+i*dx) << ", " << sol[i] << std::endl;
 	}
 	
+	
 	return 0;
 }
