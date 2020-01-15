@@ -19,7 +19,7 @@ public:
 	
 	double getSmax();
 	double getSmin();
-	double get_vol(const int& i);
+	double get_vol(const int& i, const int& j);
 	double get_r(const int&i);
 	double get_dx();
 	
@@ -48,8 +48,8 @@ private:
 	std::vector<std::vector<double>> get_conditions(std::vector<std::vector<double>> conditions, std::string method);
 	std::vector<double> getStrike();
 	std::string getName();
-	std::function<double(double)> model::getpayoff();
-
+	std::function<double(double)> getpayoff();
+	//std::vector<std::vector<double>> resize_sigma(const double& S_min_mat, const double& S_max_mat);
 };
 
 std::vector<double> getRow(std::vector<std::vector<double>> mat, int i);
