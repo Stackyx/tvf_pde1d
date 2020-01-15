@@ -119,7 +119,7 @@ model::model(const double& S0, const std::vector<std::vector<double>>& sigma, co
 	m_Smin = log(S_min_mat);
 	m_Smax = log(S_max_mat);
 	
-	size_t size_row_sigma = (sizeof(m_sigma)/sizeof(m_sigma[0]));
+	size_t size_row_sigma = m_sigma.size();
 	m_dx = (S_max_mat - S_min_mat)/size_row_sigma;
 	
 	m_r.resize(m_nt);
@@ -139,7 +139,7 @@ model::model(const double& S0, const std::vector<std::vector<double>>& sigma, co
 	m_dt = T/n_t;
 	
 	
-	size_t size_row_sigma = (sizeof(m_sigma)/sizeof(m_sigma[0]));
+	size_t size_row_sigma = m_sigma.size();
 	//double dx_sigma = (S_max_mat - S_min_mat)/size_row_sigma;
 	//int i_initS = (m_initS - S_min_mat)/dx_sigma; 
 	//double average_vol_t = accumulate(getRow(m_sigma,i_initS).begin(), getRow(m_sigma,i_initS).end(), 0.0)/m_sigma[0].size(); 
@@ -186,7 +186,7 @@ double model::getSmin()
 
 std::vector<double> model::get_vol_col(const int& i)
 {
-	return getColumn(m_sigma, i);
+	return getCol(m_sigma, i);
 }
 
 double model::get_r(const int&i)
@@ -214,12 +214,18 @@ std::function<double(double)> model::getpayoff()
 	return m_f.getpayoff();
 }
 
-std::vector<double> getColumn(std::vector<std::vector<double>> mat, int i)
+std::vector<std::vector<double>>  model::getSigma()
+{
+	return m_sigma;
+}
+
+
+std::vector<double> getCol(std::vector<std::vector<double>> mat, int i)
 {
 	std::vector<double> temp;
-	temp.resize((sizeof(mat)/sizeof(mat[0])));
+	temp.resize(mat.size());
 	
-	for (int j = 0; j < (sizeof(mat)/sizeof(mat[0])); ++j) {
+	for (int j = 0; j < (mat.size()); ++j) {
 		temp[j] = mat[j][i];
 	}
 	

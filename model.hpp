@@ -22,18 +22,13 @@ public:
 	std::vector<double> get_vol_col(const int& i);
 	double get_r(const int&i);
 	double get_dx();
+	std::vector<std::vector<double>> getSigma();
 	
-
 	
 private:
 	
 	friend class solver_edp;
 	
-	std::vector<std::vector<double>> m_cdt;
-	double m_initS;
-	std::vector<std::vector<double>> m_sigma;
-	std::vector<double> m_r;
-
 	double m_dt;
 	double m_T;
 	double m_Smin;
@@ -44,7 +39,11 @@ private:
 	double m_theta;
 	std::string m_method;
 	payoff m_f;
-	
+	std::vector<std::vector<double>> m_cdt;
+	double m_initS;
+	std::vector<std::vector<double>> m_sigma;
+	std::vector<double> m_r;
+
 	std::vector<std::vector<double>> get_conditions(std::vector<std::vector<double>> conditions, std::string method);
 	std::vector<double> getStrike();
 	std::string getName();
@@ -52,6 +51,6 @@ private:
 	//std::vector<std::vector<double>> resize_sigma(const double& S_min_mat, const double& S_max_mat);
 };
 
-std::vector<double> getColumn(std::vector<std::vector<double>> mat, int i);
+std::vector<double> getCol(std::vector<std::vector<double>> mat, int i);
 
 #endif
