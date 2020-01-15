@@ -48,11 +48,12 @@ void solver_edp::solve_pde()
 	delta.resize(sol.size()-2);
 	gamma.resize(sol.size()-2);
 	
-	for(int i=1; i < sol.size()-1; ++i)
+	for(int i=1; i < sol.size()-2; ++i)
 	{
-		double dx = exp(s_pde_model.m_Smin+(i)*s_pde_model.m_dx) - exp(s_pde_model.m_Smin+(i-1)*s_pde_model.m_dx);
-		delta[i-1] = (sol[i+1] - sol[i-1])/(2*dx);
-		gamma[i-1] = (sol[i+1] - 2*sol[i] + sol[i-1])/pow(dx, 2);
+		double dxi = exp(s_pde_model.m_Smin+(i)*s_pde_model.m_dx) - exp(s_pde_model.m_Smin+(i-1)*s_pde_model.m_dx);
+		double dxi1 = exp(s_pde_model.m_Smin+(i+1)*s_pde_model.m_dx) - exp(s_pde_model.m_Smin+(i)*s_pde_model.m_dx);
+		delta[i-1] = (sol[i+1] - sol[i-1])/(dxi+dxi1);
+		gamma[i-1] = (sol[i+1] - 2*sol[i] + sol[i-1])/(dxi*dxi1);
 	}
 	
 	solution = sol;
