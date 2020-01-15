@@ -13,8 +13,7 @@ void solver_edp::solve_pde()
 	
 	std::vector<double> sol(s_pde_model.m_nx);
 	std::vector<double> vect(s_pde_model.m_nx);
-	
-	double sigma;
+	std::vector<double> sigma;
 	double r;
 	
 	sol[0] = boundaries[0][s_pde_model.m_nt-1];
@@ -31,7 +30,7 @@ void solver_edp::solve_pde()
 	for(int i = s_pde_model.m_nt - 1; i > 0; --i)
 	{
 		
-		sigma = s_pde_model.get_vol(i);
+		sigma = s_pde_model.get_vol_col(i);
 		r = s_pde_model.get_r(i);
 		
 		pde_matrix_to_inverse(pde_mat_inv, sigma, r, s_pde_model.m_theta, s_pde_model.m_dt, s_pde_model.m_dx, s_pde_model.m_nx, i);
@@ -50,36 +49,36 @@ void solver_edp::solve_pde()
 	for(int i=0; i < sol.size(); ++i)
 	{
 		delta[i] = (sol[i+1] - sol[i-1])/s_pde_model.m_dx;
-		gamma[i] = (sol[i+1] - 2*sol[i] + sol[i-1])/pow(s_pde_model.m_dx, 2)
+		gamma[i] = (sol[i+1] - 2*sol[i] + sol[i-1])/pow(s_pde_model.m_dx, 2);
 	}
 	
 	solution = res;
 }
 
-void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, const double& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)
+void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)
 {	
 	mat[1][0] = 1;
 	mat[1][nx-1] = 1;
 
 	for(int j = 1; j<nx-1; ++j)
 	{
-		mat[1][j] = 1 - dt*(1-theta)*(pow(sigma/dx,2) + r);
-		mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma,2)/dx + pow(sigma,2)/2. - r);
-		mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma,2)/dx - pow(sigma,2)/2. + r);
+		mat[1][j] = 1 - dt*(1-theta)*(pow(sigma[j]/dx,2) + r);
+		mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
+		mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
 	}
 
 }
 
-void solver_edp::pde_matrix_to_inverse(std::vector<std::vector<double>>& mat, const double& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)
+void solver_edp::pde_matrix_to_inverse(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)
 {
 	mat[1][0] = 1;
 	mat[1][nx-1] = 1;
 	
 	for(int j = 1; j<nx-1; ++j)
 	{		
-		mat[1][j] = 1+dt*theta*(pow(sigma/dx,2) + r);
-		mat[0][j] = dt*theta/(2*dx)*(-pow(sigma,2)/dx - pow(sigma,2)/2. + r);
-		mat[2][j] = dt*theta/(2*dx)*(-pow(sigma,2)/dx + pow(sigma,2)/2. - r);
+		mat[1][j] = 1+dt*theta*(pow(sigma[j]/dx,2) + r);
+		mat[0][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
+		mat[2][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
 	}
 
 }

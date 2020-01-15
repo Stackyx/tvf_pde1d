@@ -139,7 +139,7 @@ model::model(const double& S0, const std::vector<std::vector<double>>& sigma, co
 	m_dt = T/n_t;
 	
 	
-	int size_row_sigma = (sizeof(m_sigma)/sizeof(m_sigma[0]));
+	size_t size_row_sigma = (sizeof(m_sigma)/sizeof(m_sigma[0]));
 	//double dx_sigma = (S_max_mat - S_min_mat)/size_row_sigma;
 	//int i_initS = (m_initS - S_min_mat)/dx_sigma; 
 	//double average_vol_t = accumulate(getRow(m_sigma,i_initS).begin(), getRow(m_sigma,i_initS).end(), 0.0)/m_sigma[0].size(); 
@@ -184,9 +184,9 @@ double model::getSmin()
 	return m_Smin;
 }
 
-double model::get_vol(const int& i, const int& j)
+std::vector<double> model::get_vol_col(const int& i)
 {
-	return m_sigma[i][j];
+	return getColumn(m_sigma, i);
 }
 
 double model::get_r(const int&i)
@@ -214,13 +214,13 @@ std::function<double(double)> model::getpayoff()
 	return m_f.getpayoff();
 }
 
-std::vector<double> getRow(std::vector<std::vector<double>> mat, int i)
+std::vector<double> getColumn(std::vector<std::vector<double>> mat, int i)
 {
 	std::vector<double> temp;
-	temp.resize(mat[i].size());
+	temp.resize((sizeof(mat)/sizeof(mat[0])));
 	
-	for (int j = 0; j < mat[i].size(); ++j) {
-		temp[j] = mat[i][j];
+	for (int j = 0; j < (sizeof(mat)/sizeof(mat[0])); ++j) {
+		temp[j] = mat[j][i];
 	}
 	
 	return temp;
@@ -246,8 +246,8 @@ std::vector<std::vector<double>> model::getDirichelet()
 
 		}
 		
-		uppercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smax));
-		lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smin));
+		uppercdt[j] = payoff(getName(), new_cdt[j]).getpayoff()(exp(m_Smax));
+		lowercdt[j] = payoff(getName(), new_cdt[j]).getpayoff()(exp(m_Smin));
 		
 	}
 	
@@ -276,8 +276,8 @@ std::vector<std::vector<double>> model::getNeumann()
 
 		}
 		
-		uppercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smax));
-		lowercdt[j] = payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smin));
+		uppercdt[j] = payoff(getName(), new_cdt[j]).getpayoff()(exp(m_Smax));
+		lowercdt[j] = payoff(getName(), new_cdt[j]).getpayoff()(exp(m_Smin));
 		
 	}
 	

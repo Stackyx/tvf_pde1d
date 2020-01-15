@@ -19,7 +19,7 @@ public:
 	
 	double getSmax();
 	double getSmin();
-	double get_vol(const int& i, const int& j);
+	std::vector<double> get_vol_col(const int& i);
 	double get_r(const int&i);
 	double get_dx();
 	
@@ -52,6 +52,6 @@ private:
 	//std::vector<std::vector<double>> resize_sigma(const double& S_min_mat, const double& S_max_mat);
 };
 
-std::vector<double> getRow(std::vector<std::vector<double>> mat, int i);
+std::vector<double> getColumn(std::vector<std::vector<double>> mat, int i);
 
 #endif
