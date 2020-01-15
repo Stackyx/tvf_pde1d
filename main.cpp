@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	std::cout << pp.getpayoff()(110) << std::endl; //get the payoff function and evaluate it at 90
 
 	
-	model model_pde(100., 0.2, 0.02, 1, 252, 500, 1./2., pp);
+	model model_pde(100., 0.2, 0.0, 1, 252, 200, 1./2., pp);
 	
 	std::vector<double> r(10);
 	std::vector<double> sigma(10);
@@ -39,15 +39,14 @@ int main(int argc, char* argv[])
 	std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
 	std::cout<< model_pde.get_vol_col(0).size() << std::endl;
 	
-	std::vector<double> sol(solver_model.solution);
-	
 	double dx = model_pde.get_dx();
 	double sMin = model_pde.getSmin();
-
 	
-	for(int i=0; i<sol.size(); ++i)
+	std::cout << model_pde.get_dx() << std::endl;
+	
+	for(int i=0; i<solver_model.delta.size(); ++i)
 	{
-		std::cout << exp(sMin+i*dx) << ", " << sol[i] << std::endl;
+		std::cout << exp(sMin+i*dx) << ", " << solver_model.delta[i] << std::endl;
 	}
 
 	
