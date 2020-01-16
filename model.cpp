@@ -264,7 +264,9 @@ std::vector<std::vector<double>> model::getDirichelet()
 
 std::vector<std::vector<double>> model::getNeumann()
 {
-	//a modifié
+
+	double h = 0.000001;
+	
 	std::vector<double> cdt = getStrike();
 	std::vector<std::vector<double>> new_cdt;
 	std::vector<double> uppercdt;
@@ -282,8 +284,8 @@ std::vector<std::vector<double>> model::getNeumann()
 
 		}
 		
-		uppercdt[j] = payoff(getName(), new_cdt[j]).getpayoff()(exp(m_Smax));
-		lowercdt[j] = payoff(getName(), new_cdt[j]).getpayoff()(exp(m_Smin));
+		uppercdt[j] = exp(m_Smax)*(payoff(getName(), getRow(new_cdt,j)).getpayoff()(exp(m_Smax) + h) - payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smax)))/h;
+		lowercdt[j] = exp(m_Smin)*(payoff(getName(), getRow(new_cdt,j)).getpayoff()(exp(m_Smin) + h) - payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smin)))/h;
 		
 	}
 	
