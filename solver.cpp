@@ -6,7 +6,6 @@ solver_edp::solver_edp(model pde_model, std::string method, std::vector<std::vec
 	: s_pde_model(pde_model), s_method(method)
 {
 	s_cdt = get_conditions(conditions, method);
-	std::cout << "ok" << std::endl;
 }
 
 void solver_edp::solve_pde()
@@ -51,7 +50,7 @@ void solver_edp::solve_pde()
 		else if (s_method == "Neumann")
 		{
 			sol[0] = (sol[0]-boundaries[0][i-1]*s_pde_model.m_dt*(sigma[0]*sigma[0]*(1./s_pde_model.m_dx + 1./.2) - r))/(-s_pde_model.m_dt*sigma[0]*sigma[0]/s_pde_model.m_dx*s_pde_model.m_dx + r + 1);
-			sol[s_pde_model.m_nx-1] = (sol[s_pde_model.m_nx-1]-boundaries[s_pde_model.m_nx-1][i-1]*s_pde_model.m_dt*(sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]*(1./s_pde_model.m_dx + 1./.2) - r))/(s_pde_model.m_dt*sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]/s_pde_model.m_dx*s_pde_model.m_dx + r + 1);
+			sol[s_pde_model.m_nx-1] = (sol[s_pde_model.m_nx-1]-boundaries[1][i-1]*s_pde_model.m_dt*(sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]*(1./s_pde_model.m_dx + 1./.2) - r))/(s_pde_model.m_dt*sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]/s_pde_model.m_dx*s_pde_model.m_dx + r + 1);
 		}	
 			
 	}
@@ -161,11 +160,11 @@ std::vector<std::vector<double>> solver_edp::getNeumann()
 	double h = 0.000001;
 	
 	std::vector<double> cdt = s_pde_model.getStrike();
-	std::vector<std::vector<double>> new_cdt;
+	std::vector<std::vector<double>> neu_cdt;
 	std::vector<double> uppercdt;
 	std::vector<double> lowercdt;
 	
-	new_cdt.resize(s_pde_model.m_nt, std::vector<double>(cdt.size()));
+	neu_cdt.resize(s_pde_model.m_nt, std::vector<double>(cdt.size()));
 	uppercdt.resize(s_pde_model.m_nt);
 	lowercdt.resize(s_pde_model.m_nt);
 	
@@ -173,12 +172,12 @@ std::vector<std::vector<double>> solver_edp::getNeumann()
 	{
 		for (int i = 0; i<cdt.size(); ++i)
 		{
-			new_cdt[j][i] = cdt[i] * exp(- s_pde_model.m_r[j] * s_pde_model.m_dt*j);
+			neu_cdt[j][i] = cdt[i] * exp(- s_pde_model.m_r[j] * s_pde_model.m_dt*j);
 
 		}
 		
-		uppercdt[j] = exp(s_pde_model.m_Smax)*(payoff(s_pde_model.getName(), getRow(new_cdt,j)).getpayoff()(exp(s_pde_model.m_Smax) + h) - payoff(s_pde_model.getName(), getRow(new_cdt, j)).getpayoff()(exp(s_pde_model.m_Smax)))/h;
-		lowercdt[j] = exp(s_pde_model.m_Smin)*(payoff(s_pde_model.getName(), getRow(new_cdt,j)).getpayoff()(exp(s_pde_model.m_Smin) + h) - payoff(s_pde_model.getName(), getRow(new_cdt, j)).getpayoff()(exp(s_pde_model.m_Smin)))/h;
+		uppercdt[j] = exp(s_pde_model.m_Smax)*(payoff(s_pde_model.getName(), neu_cdt[j])).getpayoff()(exp(s_pde_model.m_Smax) + h) - payoff(s_pde_model.getName(), neu_cdt[j]).getpayoff()(exp(s_pde_model.m_Smax))/h;
+		lowercdt[j] = exp(s_pde_model.m_Smin)*(payoff(s_pde_model.getName(), neu_cdt[j])).getpayoff()(exp(s_pde_model.m_Smin) + h) - payoff(s_pde_model.getName(), neu_cdt[j]).getpayoff()(exp(s_pde_model.m_Smin))/h;
 		
 	}
 	

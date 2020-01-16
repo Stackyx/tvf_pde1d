@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 	
 	for(int i=0; i<solver_model.delta.size(); ++i)
 	{
-		std::cout << exp(sMin+i*dx) << ", " << solver_model.delta[i] << std::endl;
+		std::cout << exp(sMin+i*dx) << ", " << solver_model.gamma[i] << std::endl;
 	}
 
 	return 0;

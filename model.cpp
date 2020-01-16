@@ -223,15 +223,4 @@ std::vector<double> getCol(std::vector<std::vector<double>> mat, int i)
 	return temp;
 }
 
-std::vector<double> getRow(std::vector<std::vector<double>> mat, int i)
-{
-	std::vector<double> temp;
-	temp.resize(mat.size());
-	
-	for (int j = 0; j < (mat.size()); ++j) {
-		temp[j] = mat[i][j];
-	}
-	
-	return temp;
-}
 #endif
