@@ -6,8 +6,8 @@
 #include <numeric>
 #include "model.hpp"
 
-model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta), m_method(method)
+model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
+	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
 	{
 		m_dt = T/n_t;
 		
@@ -31,11 +31,9 @@ model::model(const double& S0, const double& sigma, const double& r, const doubl
 		m_Smin = log(m_initS) - 5 * sigma * pow(m_T, 0.5);
 		m_Smax = log(m_initS) + 5 * sigma * pow(m_T, 0.5);
 		m_dx = (m_Smax - m_Smin)/m_nx;
-	
-		m_cdt = get_conditions(conditions, method);
 	}
 	
-model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
+model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
 	{
 		
@@ -59,12 +57,10 @@ model::model(const double& S0, const std::vector<double>& sigma, const double& r
 		{
 			std::copy(sigma.begin(), sigma.end(), m_sigma[i].begin());
 		}
-		
-	
-		m_cdt = get_conditions(conditions, method);
+
 	}
 
-model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
+model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
 	: m_r(r), m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
 	{	
 		
@@ -83,11 +79,10 @@ model::model(const double& S0, const double& sigma, const std::vector<double>& r
 				m_sigma[i][j] = sigma;
 			}
 		}
-		
-		m_cdt = get_conditions(conditions, method);
+
 	}
 
-model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
+model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_r(r), m_theta(theta)
 {
 	
@@ -107,11 +102,10 @@ model::model(const double& S0, const std::vector<double>& sigma, const std::vect
 	{
 		std::copy(sigma.begin(), sigma.end(), m_sigma[i].begin());
 	}
-	
-	m_cdt = get_conditions(conditions, method);
+
 }
 
-model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
+model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_theta(theta)
 {
 	
@@ -128,11 +122,10 @@ model::model(const double& S0, const std::vector<std::vector<double>>& sigma, co
 	{			
 		m_r[i] = r;
 	}
-	
-	m_cdt = get_conditions(conditions, method);
+
 }
 
-model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f, std::vector<std::vector<double>> conditions, std::string method)
+model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r), m_theta(theta)
 {
 	
@@ -147,9 +140,7 @@ model::model(const double& S0, const std::vector<std::vector<double>>& sigma, co
 	m_Smin = log(S_min_mat);
 	m_Smax = log(S_max_mat);
 	m_dx = (S_max_mat - S_min_mat)/size_row_sigma;
-	
-	
-	m_cdt = get_conditions(conditions, method);
+
 }
 
 // std::vector<std::vector<double>> model::resize_sigma(const double& S_min_mat, const double& S_max_mat)
@@ -232,94 +223,15 @@ std::vector<double> getCol(std::vector<std::vector<double>> mat, int i)
 	return temp;
 }
 
-
-std::vector<std::vector<double>> model::getDirichelet()
+std::vector<double> getRow(std::vector<std::vector<double>> mat, int i)
 {
-	std::vector<double> cdt = getStrike();
-	std::vector<std::vector<double>> new_cdt;
-	std::vector<double> uppercdt;
-	std::vector<double> lowercdt;
+	std::vector<double> temp;
+	temp.resize(mat.size());
 	
-	new_cdt.resize(m_nt, std::vector<double>(getStrike().size()));
-	uppercdt.resize(m_nt);
-	lowercdt.resize(m_nt);
-	
-	for (int j = 0; j<m_nt; ++j)
-	{
-		for (int i = 0; i<getStrike().size(); ++i)
-		{
-			new_cdt[j][i] = cdt[i] * exp(- m_r[j] * m_dt*j);
-
-		}
-		
-		uppercdt[j] = payoff(getName(), new_cdt[j]).getpayoff()(exp(m_Smax));
-		lowercdt[j] = payoff(getName(), new_cdt[j]).getpayoff()(exp(m_Smin));
-		
+	for (int j = 0; j < (mat.size()); ++j) {
+		temp[j] = mat[i][j];
 	}
 	
-	return {lowercdt, uppercdt};
-	
+	return temp;
 }
-
-
-std::vector<std::vector<double>> model::getNeumann()
-{
-
-	double h = 0.000001;
-	
-	std::vector<double> cdt = getStrike();
-	std::vector<std::vector<double>> new_cdt;
-	std::vector<double> uppercdt;
-	std::vector<double> lowercdt;
-	
-	new_cdt.resize(m_nt, std::vector<double>(getStrike().size()));
-	uppercdt.resize(m_nt);
-	lowercdt.resize(m_nt);
-	
-	for (int j = 0; j<m_nt; ++j)
-	{
-		for (int i = 0; i<getStrike().size(); ++i)
-		{
-			new_cdt[j][i] = cdt[i] * exp(- m_r[j] * m_dt*j);
-
-		}
-		
-		uppercdt[j] = exp(m_Smax)*(payoff(getName(), getRow(new_cdt,j)).getpayoff()(exp(m_Smax) + h) - payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smax)))/h;
-		lowercdt[j] = exp(m_Smin)*(payoff(getName(), getRow(new_cdt,j)).getpayoff()(exp(m_Smin) + h) - payoff(getName(), getRow(new_cdt, j)).getpayoff()(exp(m_Smin)))/h;
-		
-	}
-	
-	return {lowercdt, uppercdt};
-	
-}
-
-
-std::vector<std::vector<double>> model::get_conditions(std::vector<std::vector<double>> conditions, std::string method)
-{	
-	
-	std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
-	if (std::equal(conditions[0].begin(), conditions[0].end(), c[0].begin()) && std::equal(conditions[1].begin(), conditions[1].end(), c[1].begin()))
-	{
-		if (CaseSensitiveIsEqual(method, "Dirichelet"))
-		{
-			std::vector<std::vector<double>> drchlt = getDirichelet();
-			conditions.resize(2, std::vector<double>(m_nt));
-			conditions = drchlt;
-		}
-		else if (CaseSensitiveIsEqual(method, "Newmann"))
-		{
-			std::vector<std::vector<double>> Nwn = getNeumann();
-			conditions.resize(2, std::vector<double>(m_nt));
-			conditions = Nwn;
-		}
-		else
-		{
-			std::cout<< "Issue with the name of the method" << std::endl;
-		}
-	}
-	
-	return conditions;
-}
-
-
 #endif
