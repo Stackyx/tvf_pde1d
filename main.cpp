@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
 	//model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
 	
-	solver_edp solver_model(model_pde);
+	solver_edp solver_model(model_pde, "Neumann");
 	solver_model.solve_pde();
 	std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
 	std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
@@ -49,7 +49,5 @@ int main(int argc, char* argv[])
 		std::cout << exp(sMin+i*dx) << ", " << solver_model.delta[i] << std::endl;
 	}
 
-	
-	
 	return 0;
 }

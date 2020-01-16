@@ -2,10 +2,11 @@
 #include "solver.hpp"
 #include <iostream>
 
-solver_edp::solver_edp(model pde_model, std::vector<std::vector<double>> conditions, std::string method)
+solver_edp::solver_edp(model pde_model, std::string method, std::vector<std::vector<double>> conditions)
 	: s_pde_model(pde_model), s_method(method)
 {
 	s_cdt = get_conditions(conditions, method);
+	std::cout << "ok" << std::endl;
 }
 
 void solver_edp::solve_pde()
@@ -20,7 +21,7 @@ void solver_edp::solve_pde()
 	
 	sol[0] = boundaries[0][s_pde_model.m_nt-1];
 	sol[s_pde_model.m_nx-1] = boundaries[1][s_pde_model.m_nt-1];
-
+	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_pde_model.m_nx));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_pde_model.m_nx));
 		
@@ -47,6 +48,12 @@ void solver_edp::solve_pde()
 			sol[0] = boundaries[0][i-1];
 			sol[s_pde_model.m_nx-1] = boundaries[1][i-1];
 		}
+		else if (s_method == "Neumann")
+		{
+			sol[0] = (sol[0]-boundaries[0][i-1]*s_pde_model.m_dt*(sigma[0]*sigma[0]*(1./s_pde_model.m_dx + 1./.2) - r))/(-s_pde_model.m_dt*sigma[0]*sigma[0]/s_pde_model.m_dx*s_pde_model.m_dx + r + 1);
+			sol[s_pde_model.m_nx-1] = (sol[s_pde_model.m_nx-1]-boundaries[s_pde_model.m_nx-1][i-1]*s_pde_model.m_dt*(sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]*(1./s_pde_model.m_dx + 1./.2) - r))/(s_pde_model.m_dt*sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]/s_pde_model.m_dx*s_pde_model.m_dx + r + 1);
+		}	
+			
 	}
 	
 	delta.resize(sol.size()-2);
@@ -74,11 +81,9 @@ void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, const std::ve
 		mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
 		mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
 	}
-
 }
 
-void solver_edp::pde_matrix_to_inverse(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)
-{
+void solver_edp::pde_matrix_to_inverse(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i){
 	mat[1][0] = 1;
 	mat[1][nx-1] = 1;
 	
