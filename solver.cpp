@@ -15,12 +15,20 @@ void solver_edp::solve_pde()
 	std::vector<double> sol(s_pde_model.m_nx);
 	std::vector<double> vect(s_pde_model.m_nx);
 	std::vector<double> sigma, sigma_plus;
-	
+	double dt(s_pde_model.m_dt);
+	double dx(s_pde_model.m_dx);
 	double r;
 	
-	sol[0] = boundaries[0][s_pde_model.m_nt-1];
-	sol[s_pde_model.m_nx-1] = boundaries[1][s_pde_model.m_nt-1];
-	
+	if (s_method == "Dirichlet")
+	{
+		sol[0] = boundaries[0][s_pde_model.m_nt-1];
+		sol[s_pde_model.m_nx-1] = boundaries[1][s_pde_model.m_nt-1];
+	}
+	else if (s_method == "Neumann")
+	{
+		sol[0] = s_pde_model.getpayoff()(exp(s_pde_model.m_Smin));
+		sol[s_pde_model.m_nx-1] = s_pde_model.getpayoff()(exp(s_pde_model.m_Smax));
+	}
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_pde_model.m_nx));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_pde_model.m_nx));
 		
@@ -49,10 +57,10 @@ void solver_edp::solve_pde()
 		}
 		else if (s_method == "Neumann")
 		{
-			sol[0] = (sol[0]-boundaries[0][i-1]*s_pde_model.m_dt*(sigma[0]*sigma[0]*(1./s_pde_model.m_dx + 1./.2) - r))/(-s_pde_model.m_dt*sigma[0]*sigma[0]/s_pde_model.m_dx*s_pde_model.m_dx + r + 1);
-			sol[s_pde_model.m_nx-1] = (sol[s_pde_model.m_nx-1]-boundaries[1][i-1]*s_pde_model.m_dt*(sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]*(1./s_pde_model.m_dx + 1./.2) - r))/(s_pde_model.m_dt*sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]/s_pde_model.m_dx*s_pde_model.m_dx + r + 1);
-		}	
-			
+			sol[0] = (sol[0] - dt*(1./2.*sigma[0]*sigma[0]-r)*boundaries[0][i-1] + dt/2.*sigma[0]*sigma[0]*(2*sol[1]-2*boundaries[0][i-1]*dx)/(dx*dx))/(dt*sigma[0]*sigma[0]/(dx*dx)+r*dt+1);
+			sol[s_pde_model.m_nx-1] = (sol[s_pde_model.m_nx-1] - dt*(1./2.*sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]-r)*boundaries[1][i-1] + dt/2.*sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]*(2*sol[s_pde_model.m_nx-2]+2*boundaries[1][i-1]*dx)/(dx*dx))/(dt*sigma[s_pde_model.m_nx-1]*sigma[s_pde_model.m_nx-1]/(dx*dx)+r*dt+1);
+		}
+		
 	}
 	
 	delta.resize(sol.size()-2);
