@@ -184,9 +184,9 @@ std::vector<std::vector<double>> solver_edp::getNeumann()
 
 		}
 		
-		uppercdt[j] = exp(s_pde_model.m_Smax)*(payoff(s_pde_model.getName(), neu_cdt[j])).getpayoff()(exp(s_pde_model.m_Smax) + h) - payoff(s_pde_model.getName(), neu_cdt[j]).getpayoff()(exp(s_pde_model.m_Smax))/h;
-		lowercdt[j] = exp(s_pde_model.m_Smin)*(payoff(s_pde_model.getName(), neu_cdt[j])).getpayoff()(exp(s_pde_model.m_Smin) + h) - payoff(s_pde_model.getName(), neu_cdt[j]).getpayoff()(exp(s_pde_model.m_Smin))/h;
-		
+		uppercdt[j] = exp(s_pde_model.m_Smax)*((payoff(s_pde_model.getName(), neu_cdt[j])).getpayoff()(exp(s_pde_model.m_Smax) + h) - payoff(s_pde_model.getName(), neu_cdt[j]).getpayoff()(exp(s_pde_model.m_Smax)))/h;
+		lowercdt[j] = exp(s_pde_model.m_Smin)*((payoff(s_pde_model.getName(), neu_cdt[j])).getpayoff()(exp(s_pde_model.m_Smin) + h) - payoff(s_pde_model.getName(), neu_cdt[j]).getpayoff()(exp(s_pde_model.m_Smin)))/h;
+
 	}
 	
 	return {lowercdt, uppercdt};
