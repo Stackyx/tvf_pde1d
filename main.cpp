@@ -35,18 +35,18 @@ int main(int argc, char* argv[])
 	
 	solver_edp solver_model(model_pde, "Neumann");
 	solver_model.solve_pde();
-	std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
-	std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
-	std::cout<< model_pde.get_vol_col(0).size() << std::endl;
+	// std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
+	// std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
+	// std::cout<< model_pde.get_vol_col(0).size() << std::endl;
 	
 	double dx = model_pde.get_dx();
 	double sMin = model_pde.getSmin();
 	
-	std::cout << model_pde.get_dx() << std::endl;
+	// std::cout << model_pde.get_dx() << std::endl;
 	
 	for(int i=0; i<solver_model.delta.size(); ++i)
 	{
-		std::cout << exp(sMin+i*dx) << ", " << solver_model.gamma[i] << std::endl;
+		std::cout << exp(sMin+i*dx) << ", " << solver_model.solution[i] << std::endl;
 	}
 
 	return 0;
