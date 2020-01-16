@@ -2,14 +2,15 @@
 #include "solver.hpp"
 #include <iostream>
 
-solver_edp::solver_edp(model pde_model)
-	: s_pde_model(pde_model)
+solver_edp::solver_edp(model pde_model, std::vector<std::vector<double>> conditions, std::string method)
+	: s_pde_model(pde_model), s_method(method)
 {
+	s_cdt = get_conditions(conditions, method);
 }
 
 void solver_edp::solve_pde()
 {	
-	std::vector<std::vector<double>> boundaries(s_pde_model.m_cdt);
+	std::vector<std::vector<double>> boundaries(s_cdt);
 	
 	std::vector<double> sol(s_pde_model.m_nx);
 	std::vector<double> vect(s_pde_model.m_nx);
@@ -19,10 +20,10 @@ void solver_edp::solve_pde()
 	
 	sol[0] = boundaries[0][s_pde_model.m_nt-1];
 	sol[s_pde_model.m_nx-1] = boundaries[1][s_pde_model.m_nt-1];
-	
+
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_pde_model.m_nx));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_pde_model.m_nx));
-	
+		
 	for(int i=1; i< sol.size()-1; ++i)
 	{
 		sol[i] = s_pde_model.m_f.getpayoff()(exp(s_pde_model.m_Smin+i*s_pde_model.m_dx));
@@ -41,8 +42,11 @@ void solver_edp::solve_pde()
 		trig_matmul(vect, pde_mat, sol);
 		product_inverse(sol, pde_mat_inv, vect); 
 		
-		sol[0] = boundaries[0][i-1];
-		sol[s_pde_model.m_nx-1] = boundaries[1][i-1];
+		if (s_method == "Dirichlet")
+		{
+			sol[0] = boundaries[0][i-1];
+			sol[s_pde_model.m_nx-1] = boundaries[1][i-1];
+		}
 	}
 	
 	delta.resize(sol.size()-2);
@@ -117,6 +121,91 @@ void solver_edp::trig_matmul(std::vector<double>& res, std::vector<std::vector<d
 	res[res.size()-1] = trig_mat[1][res.size()-1]*x[res.size()-1] + trig_mat[0][res.size()-1]*x[res.size()-2];
 }
 
+std::vector<std::vector<double>> solver_edp::getDirichelet()
+{
+	std::vector<double> cdt = s_pde_model.getStrike();
+	std::vector<std::vector<double>> new_cdt;
+	std::vector<double> uppercdt;
+	std::vector<double> lowercdt;
+	
+	new_cdt.resize(s_pde_model.m_nt, std::vector<double>(cdt.size()));
+	uppercdt.resize(s_pde_model.m_nt);
+	lowercdt.resize(s_pde_model.m_nt);
+	
+	for (int j = 0; j<s_pde_model.m_nt; ++j)
+	{
+		for (int i = 0; i<cdt.size(); ++i)
+		{
+			new_cdt[j][i] = cdt[i] * exp(- s_pde_model.m_r[j] * s_pde_model.m_dt*j);
 
+		}
+		
+		uppercdt[j] = payoff(s_pde_model.getName(), new_cdt[j]).getpayoff()(exp(s_pde_model.m_Smax));
+		lowercdt[j] = payoff(s_pde_model.getName(), new_cdt[j]).getpayoff()(exp(s_pde_model.m_Smin));
+		
+	}
+	
+	return {lowercdt, uppercdt};
+	
+}
+
+
+std::vector<std::vector<double>> solver_edp::getNeumann()
+{
+
+	double h = 0.000001;
+	
+	std::vector<double> cdt = s_pde_model.getStrike();
+	std::vector<std::vector<double>> new_cdt;
+	std::vector<double> uppercdt;
+	std::vector<double> lowercdt;
+	
+	new_cdt.resize(s_pde_model.m_nt, std::vector<double>(cdt.size()));
+	uppercdt.resize(s_pde_model.m_nt);
+	lowercdt.resize(s_pde_model.m_nt);
+	
+	for (int j = 0; j<s_pde_model.m_nt; ++j)
+	{
+		for (int i = 0; i<cdt.size(); ++i)
+		{
+			new_cdt[j][i] = cdt[i] * exp(- s_pde_model.m_r[j] * s_pde_model.m_dt*j);
+
+		}
+		
+		uppercdt[j] = exp(s_pde_model.m_Smax)*(payoff(s_pde_model.getName(), getRow(new_cdt,j)).getpayoff()(exp(s_pde_model.m_Smax) + h) - payoff(s_pde_model.getName(), getRow(new_cdt, j)).getpayoff()(exp(s_pde_model.m_Smax)))/h;
+		lowercdt[j] = exp(s_pde_model.m_Smin)*(payoff(s_pde_model.getName(), getRow(new_cdt,j)).getpayoff()(exp(s_pde_model.m_Smin) + h) - payoff(s_pde_model.getName(), getRow(new_cdt, j)).getpayoff()(exp(s_pde_model.m_Smin)))/h;
+		
+	}
+	
+	return {lowercdt, uppercdt};
+	
+}
+
+std::vector<std::vector<double>> solver_edp::get_conditions(std::vector<std::vector<double>> conditions, std::string method)
+{	
+	
+	std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
+	if (std::equal(conditions[0].begin(), conditions[0].end(), c[0].begin()) && std::equal(conditions[1].begin(), conditions[1].end(), c[1].begin()))
+	{
+		if (CaseSensitiveIsEqual(method, "Dirichlet"))
+		{
+			std::vector<std::vector<double>> drchlt = getDirichelet();
+			conditions.resize(2, std::vector<double>(s_pde_model.m_nt));
+			conditions = drchlt;
+		}
+		else if (CaseSensitiveIsEqual(method, "Neumann"))
+		{
+			std::vector<std::vector<double>> Neu = getNeumann();
+			conditions.resize(2, std::vector<double>(s_pde_model.m_nt));
+			conditions = Neu;
+		}
+		else
+		{
+			std::cout<< "Issue with the name of the method" << std::endl;
+		}
+	}
+	
+	return conditions;
+}
 
 
