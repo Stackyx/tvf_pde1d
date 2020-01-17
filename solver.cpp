@@ -8,7 +8,7 @@ solver_edp::solver_edp(model pde_model, std::string method, std::vector<std::vec
 	s_cdt = get_conditions(conditions, method);
 }
 
-void solver_edp::solve_pde()
+void solver_edp::solve_pde(const bool& vega_bool)
 {	
 	std::vector<std::vector<double>> boundaries(s_cdt);
 	
@@ -75,6 +75,10 @@ void solver_edp::solve_pde()
 	}
 	
 	solution = sol;
+	
+	if(vega_bool){
+		//put the vega computation
+	}
 }
 
 void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)
@@ -149,6 +153,8 @@ std::vector<std::vector<double>> solver_edp::getDirichelet()
 		for (int i = 0; i<cdt.size(); ++i)
 		{
 			new_cdt[j][i] = cdt[i] * exp(- s_pde_model.m_r[j] * s_pde_model.m_dt*j);
+			//new_cdt[j][i] = cdt[i];
+
 
 		}
 		
@@ -220,4 +226,5 @@ std::vector<std::vector<double>> solver_edp::get_conditions(std::vector<std::vec
 	return conditions;
 }
 
+std::vector<double> solver_edp::vega(
 
