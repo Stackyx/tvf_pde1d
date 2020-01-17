@@ -27,6 +27,8 @@ set(PDE_SOLVER_SRCS
     model.hpp
     solver.cpp
     solver.hpp
+    mesh.cpp
+    mesh.hpp
     main.cpp)
 
 set(PDE_SOLVER_TARGET pde_solver)

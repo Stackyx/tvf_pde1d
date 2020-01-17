@@ -2,6 +2,7 @@
 #include "closed_form.hpp"
 #include "model.hpp"
 #include "solver.hpp"
+#include "mesh.hpp"
 #include <algorithm>
 
 
@@ -14,18 +15,26 @@ int main(int argc, char* argv[])
 	std::cout << pp.getparameters()[0] << std::endl; // get the parameters
 	std::cout << pp.getname() << std::endl; // get the name
 	std::cout << pp.getpayoff()(110) << std::endl; //get the payoff function and evaluate it at 90
-
 	
-	model model_pde(100., 0.15, 0.0, 1, 365, 1000, 1./2., pp);
+	double mat = 1;
+	double vol = 0.2;
+	double S = 100;
+	double theta = 1./2;
+	int nx = 1000;
+	int nt = 365;
 	
-	std::vector<double> r(10);
-	std::vector<double> sigma(10);
+	mesh grille(S, mat, nx, nt, vol);
 	
-	for(int i=0; i<10; ++i)
-	{	
-		sigma[i] = i*2./100.+0.2;
-		r[i]=i*3./100.;
-	}
+	model model_pde(S, vol, 0.0, mat, nt, nx, theta, pp);
+	
+	// std::vector<double> r(10);
+	// std::vector<double> sigma(10);
+	
+	// for(int i=0; i<10; ++i)
+	// {	
+		// sigma[i] = i*2./100.+0.2;
+		// r[i]=i*3./100.;
+	// }
 	
 	//model model_pde_r(100., 0.2, r, 1, 10, 10, 1./2, pp);
 
@@ -33,7 +42,7 @@ int main(int argc, char* argv[])
 
 	//model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
 	
-	solver_edp solver_model(model_pde, "Neumann");
+	solver_edp solver_model(model_pde, grille, "Neumann");
 	solver_model.solve_pde();
 	// std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
 	// std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
@@ -49,6 +58,10 @@ int main(int argc, char* argv[])
 		double prix = bs_price(exp(sMin+i*dx) ,100, 0.15, 1, 1);
 		std::cout << exp(sMin+i*dx) << ", " << solver_model.solution[i] << "," << prix << ", difference = " << prix - solver_model.solution[i]<< std::endl;
 	}
+	
+	std::cout << "-----------------------------------" << std::endl;
+	
+	// grille.print_mesh(); ça marche!
 	
 	return 0;
 }
