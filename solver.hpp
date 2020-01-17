@@ -9,11 +9,12 @@ public:
 	
 	solver_edp(model pde_model, std::string method = "Dirichlet", std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
 	
-	void solve_pde();
+	void solve_pde(const bool& vega_bool = 0);
 		
 	std::vector<double> solution;
 	std::vector<double> delta;
 	std::vector<double> gamma;
+	std::vector<double> vega;
 
 private:
 	model s_pde_model;
