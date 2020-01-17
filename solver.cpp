@@ -225,6 +225,3 @@ std::vector<std::vector<double>> solver_edp::get_conditions(std::vector<std::vec
 	
 	return conditions;
 }
-
-std::vector<double> solver_edp::vega(
-
