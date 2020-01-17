@@ -2,7 +2,7 @@
 #include "solver.hpp"
 #include <iostream>
 
-solver_edp::solver_edp(model pde_model, std::string method, std::vector<std::vector<double>> conditions)
+solver_edp::solver_edp(model pde_model, mesh grille, std::string method, std::vector<std::vector<double>> conditions)
 	: s_pde_model(pde_model), s_method(method)
 {
 	s_cdt = get_conditions(conditions, method);

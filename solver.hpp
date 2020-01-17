@@ -2,12 +2,13 @@
 #define SOLVER_HPP
 #include <vector>
 #include "model.hpp"
+#include "mesh.hpp"
 
 class solver_edp
 {
 public:
 	
-	solver_edp(model pde_model, std::string method = "Dirichlet", std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
+	solver_edp(model pde_model, mesh grille, std::string method = "Dirichlet", std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
 	
 	void solve_pde(const bool& vega_bool = 0);
 		
