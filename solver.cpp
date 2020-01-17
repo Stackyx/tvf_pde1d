@@ -18,7 +18,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	double dt(s_pde_model.m_dt);
 	double dx(s_pde_model.m_dx);
 	double r;
-	
+		
 	if (s_method == "Dirichlet")
 	{
 		sol[0] = boundaries[0][s_pde_model.m_nt-1];

@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	std::cout << pp.getpayoff()(110) << std::endl; //get the payoff function and evaluate it at 90
 
 	
-	model model_pde(100., 0.15, 0.0, 1, 252, 500, 1./2., pp);
+	model model_pde(100., 0.15, 0.0, 1, 365, 1000, 1./2., pp);
 	
 	std::vector<double> r(10);
 	std::vector<double> sigma(10);
@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 
 	//model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
 	
-	solver_edp solver_model(model_pde);
+	solver_edp solver_model(model_pde, "Neumann");
 	solver_model.solve_pde();
 	// std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
 	// std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
@@ -44,12 +44,11 @@ int main(int argc, char* argv[])
 	
 	// std::cout << model_pde.get_dx() << std::endl;
 	
-	for(int i=0; i<solver_model.delta.size(); ++i)
+	for(int i=0; i<solver_model.solution.size(); ++i)
 	{
 		double prix = bs_price(exp(sMin+i*dx) ,100, 0.15, 1, 1);
 		std::cout << exp(sMin+i*dx) << ", " << solver_model.solution[i] << "," << prix << ", difference = " << prix - solver_model.solution[i]<< std::endl;
 	}
-	
 	
 	return 0;
 }
