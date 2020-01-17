@@ -7,9 +7,17 @@
 #include "model.hpp"
 
 model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
+	: m_nt(n_t), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
 	{
-		m_dt = T/n_t;
+		if (n_x % 2 == 0)
+		{
+			m_nx = n_x+1;
+		}
+		else
+		{
+			m_nx = n_x;
+		}
+		m_dt = T/(n_t-1);
 		
 		m_sigma.resize(m_nx, std::vector<double>(m_nt));
 		
@@ -30,19 +38,19 @@ model::model(const double& S0, const double& sigma, const double& r, const doubl
 		
 		m_Smin = log(m_initS) - 5 * sigma * pow(m_T, 0.5);
 		m_Smax = log(m_initS) + 5 * sigma * pow(m_T, 0.5);
-		m_dx = (m_Smax - m_Smin)/m_nx;
+		m_dx = (m_Smax - m_Smin)/(m_nx-1);
 	}
 	
 model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
 	{
 		
-		m_dt = T/n_t;
+		m_dt = T/(n_t-1);
 		double average_vol = accumulate(sigma.begin(), sigma.end(), 0.0)/sigma.size(); 
 		//double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
 		m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
 		m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
-		m_dx = (m_Smax - m_Smin)/m_nx;
+		m_dx = (m_Smax - m_Smin)/(m_nx-1);
 		
 		m_r.resize(m_nt);
 		
@@ -64,11 +72,11 @@ model::model(const double& S0, const double& sigma, const std::vector<double>& r
 	: m_r(r), m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
 	{	
 		
-		m_dt = T/n_t;
+		m_dt = T/(n_t-1);
 		
 		m_Smin = log(m_initS) - 5 * sigma * pow(m_T, 0.5);
 		m_Smax = log(m_initS) + 5 * sigma * pow(m_T, 0.5);
-		m_dx = (m_Smax - m_Smin)/m_nx;
+		m_dx = (m_Smax - m_Smin)/(m_nx-1);
 		
 		m_sigma.resize(m_nx, std::vector<double>(m_nt));
 		
@@ -86,14 +94,14 @@ model::model(const double& S0, const std::vector<double>& sigma, const std::vect
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_r(r), m_theta(theta)
 {
 	
-	m_dt = T/n_t;
+	m_dt = T/(n_t-1);
 	
 	double average_vol = accumulate(sigma.begin(), sigma.end(), 0.0)/sigma.size(); 
 	//double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
 	
 	m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
 	m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
-	m_dx = (m_Smax - m_Smin)/m_nx;
+	m_dx = (m_Smax - m_Smin)/(m_nx-1);
 	
 	
 	m_sigma.resize(m_nx,std::vector<double>(m_nt));
@@ -109,12 +117,12 @@ model::model(const double& S0, const std::vector<std::vector<double>>& sigma, co
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_theta(theta)
 {
 	
-	m_dt = T/n_t;
+	m_dt = T/(n_t-1);
 	m_Smin = log(S_min_mat);
 	m_Smax = log(S_max_mat);
 	
 	size_t size_row_sigma = m_sigma.size();
-	m_dx = (S_max_mat - S_min_mat)/size_row_sigma;
+	m_dx = (S_max_mat - S_min_mat)/(size_row_sigma-1);
 	
 	m_r.resize(m_nt);
 	
@@ -129,7 +137,7 @@ model::model(const double& S0, const std::vector<std::vector<double>>& sigma, co
 	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r), m_theta(theta)
 {
 	
-	m_dt = T/n_t;
+	m_dt = T/(n_t-1);
 	
 	
 	size_t size_row_sigma = m_sigma.size();
@@ -139,7 +147,7 @@ model::model(const double& S0, const std::vector<std::vector<double>>& sigma, co
 	
 	m_Smin = log(S_min_mat);
 	m_Smax = log(S_max_mat);
-	m_dx = (S_max_mat - S_min_mat)/size_row_sigma;
+	m_dx = (S_max_mat - S_min_mat)/(size_row_sigma-1);
 
 }
 
