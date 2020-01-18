@@ -20,7 +20,7 @@ public:
 
 private:
 	model s_pde_model;
-	mesh s_grille;
+	mesh s_mesh;
 	
 	void pde_matrix(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i);
 	void pde_matrix_to_inverse(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i);
@@ -30,6 +30,7 @@ private:
 	std::string s_method;
 	
 	std::vector<std::vector<double>> s_cdt;
+	
 
 };
 

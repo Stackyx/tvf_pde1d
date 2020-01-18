@@ -6,19 +6,15 @@
 class model
 {
 public:
-	model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f);
-	model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f);
-	model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f);
-	model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f);
+	model(double sigma, double r, int n_t, int n_x, double theta, payoff& f);
+	model(const std::vector<double>& sigma, double r, int n_t, int n_x, double theta, payoff& f);
+	model(double sigma, const std::vector<double>& r, double T, int n_t, int n_x, double theta, payoff& f);
+	model(const std::vector<double>& sigma, const std::vector<double>& r, int n_t, int n_x, double theta, payoff& f);
+	model(const std::vector<std::vector<double>>& sigma, const double& r, const int& n_t, double theta, payoff& f);
+	model(const std::vector<std::vector<double>>& sigma, const std::vector<double>& r, const double theta, payoff& f);
 	
-	model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f);
-	model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f);
-	
-	double getSmax();
-	double getSmin();
 	std::vector<double> get_vol_col(const int& i);
 	double get_r(const int&i);
-	double get_dx();
 	std::vector<std::vector<double>> getSigma();
 	
 	
@@ -27,17 +23,7 @@ private:
 	friend class solver_edp;
 	friend class bound;
 	
-	double m_dt;
-	double m_T;
-	double m_Smin;
-	double m_dx;
-	double m_Smax;
 	double m_theta;
-	double m_initS;
-
-	int m_nt;
-	int m_nx;
-	
 	std::vector<double> m_r;
 	std::vector<std::vector<double>> m_sigma;
 	
