@@ -7,7 +7,12 @@
 mesh::mesh(const double& S, const double& T, const int& n_x, const int& n_t, const double& sigma)
 	: m_nx(n_x), m_nt(n_t)
 {
-	m_dt = T/(m_nt -1);
+	if (m_nx % 2 == 0)
+	{
+		m_nx += 1;
+	}
+	
+	m_dt = T/(m_nt - 1);
 	
 	m_Smax = std::log(S) + 5 * sigma * std::sqrt(T);
 	m_Smin = std::log(S) - 5 * sigma * std::sqrt(T);
@@ -28,4 +33,34 @@ void mesh::print_mesh()
 	{
 		std::cout << i*m_dt << std::endl;
 	}
+}
+
+double mesh::get_dx()
+{
+	return m_dx;
+}
+
+double mesh::get_dt()
+{
+	return m_dt;
+}
+
+double mesh::get_Smax()
+{
+	return m_Smax;
+}
+
+double mesh::get_Smin()
+{
+	return m_Smin;
+}
+
+int mesh::get_nx()
+{
+	return m_nx;
+}
+
+int mesh::get_nt()
+{
+	return m_nt;
 }

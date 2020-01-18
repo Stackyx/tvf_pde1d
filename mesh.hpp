@@ -9,6 +9,14 @@ public:
 	
 	void print_mesh();
 	
+	double get_dt();
+	double get_dx();
+	double get_Smax();
+	double get_Smin();
+	
+	int get_nx();
+	int get_nt();
+	
 private:
 
 	friend class bound;

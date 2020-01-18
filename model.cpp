@@ -6,83 +6,69 @@
 #include <numeric>
 #include "model.hpp"
 
-model::model(const double& S0, const double& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
-	: m_nt(n_t), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
-	{
+model::model(double sigma, double r, int n_t, int n_x, double theta, payoff& f)
+	: m_f(f), m_theta(theta)
+	{	
+		
 		if (n_x % 2 == 0)
 		{
-			m_nx = n_x+1;
+			n_x += 1;
 		}
-		else
-		{
-			m_nx = n_x;
-		}
-		m_dt = T/(n_t-1);
 		
-		m_sigma.resize(m_nx, std::vector<double>(m_nt));
+		m_sigma.resize(n_x, std::vector<double>(n_t));
+		m_r.resize(n_t);
 		
-		for (int j = 0; j<m_nt; ++j)
+		for (int j = 0; j<n_t; ++j)
 		{
-			for(int i=0;i<m_nx;++i)
+			for(int i=0;i<n_x;++i)
 			{
 				m_sigma[i][j] = sigma;
 			}
+			
+			m_r[j] = r;
 		}
 		
-		m_r.resize(m_nt);
-		
-		for(int i=0;i<m_nt;++i)
-		{
-			m_r[i] = r;
-		}
-		
-		m_Smin = log(m_initS) - 5 * sigma * pow(m_T, 0.5);
-		m_Smax = log(m_initS) + 5 * sigma * pow(m_T, 0.5);
-		m_dx = (m_Smax - m_Smin)/(m_nx-1);
 	}
 	
-model::model(const double& S0, const std::vector<double>& sigma, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
+model::model(const std::vector<double>& sigma, double r, int n_t, int n_x, double theta, payoff& f)
+	: m_f(f), m_theta(theta)
 	{
 		
-		m_dt = T/(n_t-1);
-		double average_vol = accumulate(sigma.begin(), sigma.end(), 0.0)/sigma.size(); 
-		//double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
-		m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
-		m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
-		m_dx = (m_Smax - m_Smin)/(m_nx-1);
+		if (n_x % 2 == 0)
+		{
+			n_x += 1;
+		}
 		
-		m_r.resize(m_nt);
+		m_r.resize(n_t);
 		
-		for(int i=0;i<m_nt;++i)
+		for(int i=0;i<n_t;++i)
 		{			
 			m_r[i] = r;
 		}
 		
-		m_sigma.resize(m_nx,std::vector<double>(m_nt));
+		m_sigma.resize(n_x,std::vector<double>(n_t));
 	
-		for (int i = 0; i<m_nx; ++i)
+		for (int i = 0; i<n_x; ++i)
 		{
 			std::copy(sigma.begin(), sigma.end(), m_sigma[i].begin());
 		}
 
 	}
 
-model::model(const double& S0, const double& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
-	: m_r(r), m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_theta(theta)
+model::model(double sigma, const std::vector<double>& r, double T, int n_t, int n_x, double theta, payoff& f)
+	: m_r(r), m_f(f), m_theta(theta)
 	{	
-		
-		m_dt = T/(n_t-1);
-		
-		m_Smin = log(m_initS) - 5 * sigma * pow(m_T, 0.5);
-		m_Smax = log(m_initS) + 5 * sigma * pow(m_T, 0.5);
-		m_dx = (m_Smax - m_Smin)/(m_nx-1);
-		
-		m_sigma.resize(m_nx, std::vector<double>(m_nt));
-		
-		for (int j = 0; j<m_nt; ++j)
+	
+		if (n_x % 2 == 0)
 		{
-			for(int i=0;i<m_nx;++i)
+			n_x += 1;
+		}
+		
+		m_sigma.resize(n_x, std::vector<double>(n_t));
+		
+		for (int j = 0; j<n_t; ++j)
+		{
+			for(int i=0;i<n_x;++i)
 			{
 				m_sigma[i][j] = sigma;
 			}
@@ -90,97 +76,39 @@ model::model(const double& S0, const double& sigma, const std::vector<double>& r
 
 	}
 
-model::model(const double& S0, const std::vector<double>& sigma, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_r(r), m_theta(theta)
+model::model(const std::vector<double>& sigma, const std::vector<double>& r, int n_t, int n_x, double theta, payoff& f)
+	: m_f(f), m_r(r), m_theta(theta)
 {
 	
-	m_dt = T/(n_t-1);
+	if (n_x % 2 == 0)
+	{
+		n_x += 1;
+	}
 	
-	double average_vol = accumulate(sigma.begin(), sigma.end(), 0.0)/sigma.size(); 
-	//double max_vol = *std::max_element(m_sigma.begin(), m_sigma.end());
+	m_sigma.resize(n_x,std::vector<double>(n_t));
 	
-	m_Smin = log(m_initS) - 5 * average_vol * pow(m_T, 0.5);
-	m_Smax = log(m_initS) + 5 * average_vol * pow(m_T, 0.5);
-	m_dx = (m_Smax - m_Smin)/(m_nx-1);
-	
-	
-	m_sigma.resize(m_nx,std::vector<double>(m_nt));
-	
-	for (int i = 0; i<m_nx; ++i)
+	for (int i = 0; i<n_x; ++i)
 	{
 		std::copy(sigma.begin(), sigma.end(), m_sigma[i].begin());
 	}
 
 }
 
-model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const double& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_theta(theta)
+model::model(const std::vector<std::vector<double>>& sigma, const double& r, const int& n_t, double theta, payoff& f)
+	: m_f(f), m_sigma(sigma), m_theta(theta)
 {
+	m_r.resize(n_t);
 	
-	m_dt = T/(n_t-1);
-	m_Smin = log(S_min_mat);
-	m_Smax = log(S_max_mat);
-	
-	size_t size_row_sigma = m_sigma.size();
-	m_dx = (S_max_mat - S_min_mat)/(size_row_sigma-1);
-	
-	m_r.resize(m_nt);
-	
-	for(int i=0;i<m_nt;++i)
+	for(int i=0;i<n_t;++i)
 	{			
 		m_r[i] = r;
 	}
 
 }
 
-model::model(const double& S0, const std::vector<std::vector<double>>& sigma, const double& S_min_mat, const double& S_max_mat, const std::vector<double>& r, const double& T, const int& n_t, const int& n_x, const double& theta, payoff& f)
-	: m_nt(n_t), m_nx(n_x), m_T(T), m_f(f), m_initS(S0), m_sigma(sigma), m_r(r), m_theta(theta)
+model::model(const std::vector<std::vector<double>>& sigma, const std::vector<double>& r, const double theta, payoff& f)
+	: m_f(f), m_sigma(sigma), m_r(r), m_theta(theta)
 {
-	
-	m_dt = T/(n_t-1);
-	
-	
-	size_t size_row_sigma = m_sigma.size();
-	//double dx_sigma = (S_max_mat - S_min_mat)/size_row_sigma;
-	//int i_initS = (m_initS - S_min_mat)/dx_sigma; 
-	//double average_vol_t = accumulate(getRow(m_sigma,i_initS).begin(), getRow(m_sigma,i_initS).end(), 0.0)/m_sigma[0].size(); 
-	
-	m_Smin = log(S_min_mat);
-	m_Smax = log(S_max_mat);
-	m_dx = (S_max_mat - S_min_mat)/(size_row_sigma-1);
-
-}
-
-// std::vector<std::vector<double>> model::resize_sigma(const double& S_min_mat, const double& S_max_mat)
-// {
-	// if (m_Smax>S_max_mat)
-	// {
-		// int n_to_add = (m_Smax - S_max_mat)/m_dx;
-		// int size_row = (sizeof(m_sigma)/sizeof(m_sigma[0]));
-		// m_sigma.resize(n_to_add + size_row);
-		
-		// // peut surement etre simplifié avec STL
-		// for (int j = 0; j<m_sigma[0].size(); ++j)
-		// {
-			// for (int i=size_row; i<size_row+n_to_add; ++i)
-			// {
-				// m_sigma[i][j] = m_sigma[size_row-1][j];
-			// }
-		// }
-	
-	// }
-	
-	
-	
-// }
-
-double model::getSmax()
-{
-	return m_Smax;
-}
-double model::getSmin()
-{
-	return m_Smin;
 }
 
 std::vector<double> model::get_vol_col(const int& i)
@@ -191,11 +119,6 @@ std::vector<double> model::get_vol_col(const int& i)
 double model::get_r(const int&i)
 {
 	return m_r[i];
-}
-
-double model::get_dx()
-{
-	return m_dx;
 }
 
 std::vector<double> model::getStrike()

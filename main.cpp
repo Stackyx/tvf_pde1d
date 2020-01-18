@@ -22,12 +22,14 @@ int main(int argc, char* argv[])
 	double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
+	double r = 0;
+	
 	int nx = 1000;
 	int nt = 365;
 	
 	mesh grille(S, mat, nx, nt, vol);
 	
-	model model_pde(S, vol, 0.0, mat, nt, nx, theta, pp);
+	model model_pde(vol, r, nt, nx, theta, pp);
 	bound boundaries(model_pde, grille);
 	// std::vector<double> r(10);
 	// std::vector<double> sigma(10);
@@ -50,20 +52,15 @@ int main(int argc, char* argv[])
 	// std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
 	// std::cout<< model_pde.get_vol_col(0).size() << std::endl;
 	
-	double dx = model_pde.get_dx();
-	double sMin = model_pde.getSmin();
-	
-	// std::cout << model_pde.get_dx() << std::endl;
+	double sMin = grille.get_Smin();
+	double dx = grille.get_dx();
 	
 	for(int i=0; i<solver_model.solution.size(); ++i)
 	{
-		double prix = bs_price(exp(sMin+i*dx) ,100, 0.2, 1, 1);
+		double prix = bs_price(exp(sMin+i*dx), S, vol, mat, 1);
 		std::cout << exp(sMin+i*dx) << ", " << solver_model.solution[i] << "," << prix << ", difference = " << prix - solver_model.solution[i]<< std::endl;
 	}
 	
-	std::cout << "-----------------------------------" << std::endl;
-	
-	// grille.print_mesh(); ça marche!
-	
+
 	return 0;
 }
