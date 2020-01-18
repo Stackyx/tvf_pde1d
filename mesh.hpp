@@ -18,8 +18,6 @@ public:
 	int get_nt();
 	
 private:
-
-	friend class bound;
 	
 	int m_nx;
 	int m_nt;

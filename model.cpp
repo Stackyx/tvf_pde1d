@@ -6,8 +6,7 @@
 #include <numeric>
 #include "model.hpp"
 
-model::model(double sigma, double r, int n_t, int n_x, double theta, payoff& f)
-	: m_f(f), m_theta(theta)
+model::model(double sigma, double r, int n_t, int n_x)
 	{	
 		
 		if (n_x % 2 == 0)
@@ -30,8 +29,7 @@ model::model(double sigma, double r, int n_t, int n_x, double theta, payoff& f)
 		
 	}
 	
-model::model(const std::vector<double>& sigma, double r, int n_t, int n_x, double theta, payoff& f)
-	: m_f(f), m_theta(theta)
+model::model(const std::vector<double>& sigma, double r, int n_t, int n_x)
 	{
 		
 		if (n_x % 2 == 0)
@@ -55,8 +53,8 @@ model::model(const std::vector<double>& sigma, double r, int n_t, int n_x, doubl
 
 	}
 
-model::model(double sigma, const std::vector<double>& r, double T, int n_t, int n_x, double theta, payoff& f)
-	: m_r(r), m_f(f), m_theta(theta)
+model::model(double sigma, const std::vector<double>& r, double T, int n_t, int n_x)
+	: m_r(r)
 	{	
 	
 		if (n_x % 2 == 0)
@@ -76,8 +74,8 @@ model::model(double sigma, const std::vector<double>& r, double T, int n_t, int 
 
 	}
 
-model::model(const std::vector<double>& sigma, const std::vector<double>& r, int n_t, int n_x, double theta, payoff& f)
-	: m_f(f), m_r(r), m_theta(theta)
+model::model(const std::vector<double>& sigma, const std::vector<double>& r, int n_t, int n_x)
+	: m_r(r)
 {
 	
 	if (n_x % 2 == 0)
@@ -94,8 +92,8 @@ model::model(const std::vector<double>& sigma, const std::vector<double>& r, int
 
 }
 
-model::model(const std::vector<std::vector<double>>& sigma, const double& r, const int& n_t, double theta, payoff& f)
-	: m_f(f), m_sigma(sigma), m_theta(theta)
+model::model(const std::vector<std::vector<double>>& sigma, const double& r, const int& n_t)
+	: m_sigma(sigma)
 {
 	m_r.resize(n_t);
 	
@@ -106,8 +104,8 @@ model::model(const std::vector<std::vector<double>>& sigma, const double& r, con
 
 }
 
-model::model(const std::vector<std::vector<double>>& sigma, const std::vector<double>& r, const double theta, payoff& f)
-	: m_f(f), m_sigma(sigma), m_r(r), m_theta(theta)
+model::model(const std::vector<std::vector<double>>& sigma, const std::vector<double>& r)
+	: m_sigma(sigma), m_r(r)
 {
 }
 
@@ -119,21 +117,6 @@ std::vector<double> model::get_vol_col(const int& i)
 double model::get_r(const int&i)
 {
 	return m_r[i];
-}
-
-std::vector<double> model::getStrike()
-{
-	return m_f.getparameters();
-}
-
-std::string model::getName()
-{
-	return m_f.getname();
-}
-
-std::function<double(double)> model::getpayoff()
-{
-	return m_f.getpayoff();
 }
 
 std::vector<std::vector<double>>  model::getSigma()
