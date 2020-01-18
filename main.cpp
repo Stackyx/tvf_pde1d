@@ -15,14 +15,12 @@ int main(int argc, char* argv[])
 	//dauphine::payoff pp = dauphine::payoff("s", { 95 , 105 }, [](double d2) {return d2 * 2; }); //if the client wants to input his own function
 	payoff pp = payoff("Call", {100}); //if we want to use the function already input in the class
 	std::cout << pp.getparameters()[0] << std::endl; // get the parameters
-	std::cout << pp.getname() << std::endl; // get the name
-	std::cout << pp.getpayoff()(110) << std::endl; //get the payoff function and evaluate it at 90
 	
 	double mat = 1;
 	double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
-	double r = 0;
+	double r = 0.02;
 	
 	int nx = 1000;
 	int nt = 365;
@@ -57,8 +55,8 @@ int main(int argc, char* argv[])
 	
 	for(int i=0; i<solver_model.solution.size(); ++i)
 	{
-		double prix = bs_price(exp(sMin+i*dx), S, vol, mat, 1);
-		std::cout << exp(sMin+i*dx) << ", " << solver_model.solution[i] << "," << prix << ", difference = " << prix - solver_model.solution[i]<< std::endl;
+		double prix = bs_price(exp(sMin+i*dx)/exp(-r*mat), S, vol, mat, 1)*exp(-r*mat);
+		std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< std::endl;
 	}
 	
 
