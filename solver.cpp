@@ -3,11 +3,9 @@
 #include <iostream>
 #include <algorithm>
 
-solver_edp::solver_edp(model pde_model, mesh grille, std::string method, std::vector<std::vector<double>> conditions)
-	: s_pde_model(pde_model), s_method(method), s_mesh(grille)
+solver_edp::solver_edp(model pde_model, mesh grille, bound boundary, payoff m, double theta)
+	: s_pde_model(pde_model), s_bound(boundary), s_mesh(grille), s_f(m), s_theta(theta)
 {
-	bound boundaries(s_pde_model, grille, method, conditions);
-	s_cdt = boundaries.get_boundaries();
 }
 
 void solver_edp::solve_pde(const bool& vega_bool)
@@ -25,22 +23,14 @@ void solver_edp::solve_pde(const bool& vega_bool)
 
 	double r;
 		
-	if (s_method == "Dirichlet")
-	{
-		sol[0] = boundaries[0][s_mesh.get_nt()-1];
-		sol[s_mesh.get_nx()-1] = boundaries[1][s_mesh.get_nt()-1];
-	}
-	else if (s_method == "Neumann")
-	{
-		sol[0] = s_pde_model.getpayoff()(exp(s_min));
-		sol[s_mesh.get_nx()-1] = s_pde_model.getpayoff()(exp(s_max));
-	}
+	s_bound.get_boundaries(s_pde_model.get_r(0), s_mesh.get_nt(), dt, sol[0], sol[s_mesh.get_nx()-1]);
+	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
 		
 	for(int i=1; i< sol.size()-1; ++i)
 	{
-		sol[i] = s_pde_model.m_f.getpayoff()(exp(s_min + i*dx));
+		sol[i] = s_f.getpayoff()(exp(s_min + i*dx));
 	}
 
 	for(int i = s_mesh.get_nt() - 1; i > 0; --i)
@@ -50,22 +40,21 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		sigma = s_pde_model.get_vol_col(i-1);
 		r = s_pde_model.get_r(i);
 		
-		pde_matrix_to_inverse(pde_mat_inv, sigma, r, s_pde_model.m_theta, dt, dx, s_mesh.get_nx(), i);
-		pde_matrix(pde_mat, sigma_plus, r, s_pde_model.m_theta, dt, dx, s_mesh.get_nx(), i);
+		pde_matrix_to_inverse(pde_mat_inv, sigma, r, s_theta, dt, dx, s_mesh.get_nx(), i);
+		pde_matrix(pde_mat, sigma_plus, r, s_theta, dt, dx, s_mesh.get_nx(), i);
 		
 		trig_matmul(vect, pde_mat, sol);
 		product_inverse(sol, pde_mat_inv, vect); 
 		
-		if (s_method == "Dirichlet")
-		{
-			sol[0] = boundaries[0][i-1];
-			sol[s_mesh.get_nx()-1] = boundaries[1][i-1];
-		}
-		else if (s_method == "Neumann")
-		{
-			sol[0] = (sol[0] - dt*(1./2.*sigma[0]*sigma[0]-r)*boundaries[0][i-1] + dt/2.*sigma[0]*sigma[0]*(2*sol[1]-2*boundaries[0][i-1]*dx)/(dx*dx))/(dt*sigma[0]*sigma[0]/(dx*dx)+r*dt+1);
-			sol[s_mesh.get_nx()-1] = (sol[s_mesh.get_nx()-1] - dt*(1./2.*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]-r)*boundaries[1][i-1] + dt/2.*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]*(2*sol[s_mesh.get_nx()-2]+2*boundaries[1][i-1]*dx)/(dx*dx))/(dt*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]/(dx*dx)+r*dt+1);
-		}
+		s_bound.get_boundaries(r, s_mesh.get_nt(), dt, sol[0], sol[s_mesh.get_nx()-1]);
+		
+		// Mettre neumann dans boundaries
+		
+		// else if (s_method == "Neumann")
+		// {
+			// sol[0] = (sol[0] - dt*(1./2.*sigma[0]*sigma[0]-r)*boundaries[0][i-1] + dt/2.*sigma[0]*sigma[0]*(2*sol[1]-2*boundaries[0][i-1]*dx)/(dx*dx))/(dt*sigma[0]*sigma[0]/(dx*dx)+r*dt+1);
+			// sol[s_mesh.get_nx()-1] = (sol[s_mesh.get_nx()-1] - dt*(1./2.*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]-r)*boundaries[1][i-1] + dt/2.*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]*(2*sol[s_mesh.get_nx()-2]+2*boundaries[1][i-1]*dx)/(dx*dx))/(dt*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]/(dx*dx)+r*dt+1);
+		// }
 		
 	}
 	

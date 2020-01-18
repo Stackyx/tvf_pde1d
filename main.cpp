@@ -28,9 +28,9 @@ int main(int argc, char* argv[])
 	int nt = 365;
 	
 	mesh grille(S, mat, nx, nt, vol);
+	model model_pde(vol, r, nt, nx);
+	bound boundaries(pp, grille, "Dirichlet");
 	
-	model model_pde(vol, r, nt, nx, theta, pp);
-	bound boundaries(model_pde, grille);
 	// std::vector<double> r(10);
 	// std::vector<double> sigma(10);
 	
@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
 
 	//model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
 	
-	solver_edp solver_model(model_pde, grille, "Neumann");
+	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
 	solver_model.solve_pde();
 	// std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
 	// std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
