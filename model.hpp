@@ -1,6 +1,6 @@
 #ifndef MODEL_HPP
 #define MODEL_HPP
-#include "closed_form.hpp"
+#include "payoff.hpp"
 
 
 class model

@@ -1,5 +1,6 @@
 #include <iostream>
 #include "closed_form.hpp"
+#include "payoff.hpp"
 #include "model.hpp"
 #include "boundaries.hpp"
 #include "solver.hpp"

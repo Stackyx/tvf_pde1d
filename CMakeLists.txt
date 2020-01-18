@@ -23,6 +23,8 @@ endif()
 set(PDE_SOLVER_SRCS
     closed_form.hpp
     closed_form.cpp
+    payoff.hpp
+    payoff.cpp
     model.cpp
     model.hpp
     solver.cpp
