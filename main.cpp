@@ -1,6 +1,7 @@
 #include <iostream>
 #include "closed_form.hpp"
 #include "model.hpp"
+#include "boundaries.hpp"
 #include "solver.hpp"
 #include "mesh.hpp"
 #include <algorithm>
@@ -26,7 +27,7 @@ int main(int argc, char* argv[])
 	mesh grille(S, mat, nx, nt, vol);
 	
 	model model_pde(S, vol, 0.0, mat, nt, nx, theta, pp);
-	
+	bound boundaries(model_pde, grille);
 	// std::vector<double> r(10);
 	// std::vector<double> sigma(10);
 	
@@ -55,7 +56,7 @@ int main(int argc, char* argv[])
 	
 	for(int i=0; i<solver_model.solution.size(); ++i)
 	{
-		double prix = bs_price(exp(sMin+i*dx) ,100, 0.15, 1, 1);
+		double prix = bs_price(exp(sMin+i*dx) ,100, 0.2, 1, 1);
 		std::cout << exp(sMin+i*dx) << ", " << solver_model.solution[i] << "," << prix << ", difference = " << prix - solver_model.solution[i]<< std::endl;
 	}
 	
