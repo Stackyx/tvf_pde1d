@@ -77,7 +77,25 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	solution = sol;
 	
 	if(vega_bool){
-		//put the vega computation
+		std::vector<double> sol2(s_pde_model.m_nx);
+		std::vector<std::vector<double>> vol_bump = s_pde_model.m_sigma;
+		double h = 0.01;
+		auto lambda = [](double d1) { return d1 + h; };
+
+		for(int c = 0; c<s_pde_model.m_sigma[0].size(); ++c)
+		{
+			std::transform(vol_bump[c].begin(), vol_bump[c].end(), vol_bump[c].begin(), lambda);
+		}
+		model model_bump_vol = model_pde(s_pde_model.m_initS, vol_bump, s_pde_model.m_Smin, s_pde_model.m_Smax ,s_pde_model.m_r, s_pde_model.m_T, s_pde_model.m_nt , s_pde_model.m_nx, s_pde_model.m_theta, s_pde_model.m_f);
+		sol2 = solver_edp(s_pde_model, s_method, s_cdt).solve_pde();
+
+		vega.resize(sol2.size());
+
+		for (int c = 0; c<solution2.size(); ++c)
+		{
+			vega[c] = (sol2 - solution)/h;
+		}
+
 	}
 }
 
