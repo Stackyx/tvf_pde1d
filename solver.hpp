@@ -3,6 +3,7 @@
 #include <vector>
 #include "model.hpp"
 #include "mesh.hpp"
+#include "boundaries.hpp"
 
 class solver_edp
 {
@@ -28,9 +29,6 @@ private:
 	std::string s_method;
 	
 	std::vector<std::vector<double>> s_cdt;
-	std::vector<std::vector<double>> getDirichelet();
-	std::vector<std::vector<double>> getNeumann();
-	std::vector<std::vector<double>> get_conditions(std::vector<std::vector<double>> conditions, std::string method);
 
 };
 

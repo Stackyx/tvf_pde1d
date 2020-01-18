@@ -10,6 +10,9 @@ public:
 	void print_mesh();
 	
 private:
+
+	friend class bound;
+	
 	int m_nx;
 	int m_nt;
 	

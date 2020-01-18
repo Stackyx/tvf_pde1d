@@ -5,7 +5,8 @@
 solver_edp::solver_edp(model pde_model, mesh grille, std::string method, std::vector<std::vector<double>> conditions)
 	: s_pde_model(pde_model), s_method(method)
 {
-	s_cdt = get_conditions(conditions, method);
+	bound boundaries(s_pde_model, grille, method, conditions);
+	s_cdt = boundaries.get_boundaries();
 }
 
 void solver_edp::solve_pde(const bool& vega_bool)
@@ -155,91 +156,4 @@ void solver_edp::trig_matmul(std::vector<double>& res, std::vector<std::vector<d
 	res[res.size()-1] = trig_mat[1][res.size()-1]*x[res.size()-1] + trig_mat[0][res.size()-1]*x[res.size()-2];
 }
 
-std::vector<std::vector<double>> solver_edp::getDirichelet()
-{
-	std::vector<double> cdt = s_pde_model.getStrike();
-	std::vector<std::vector<double>> new_cdt;
-	std::vector<double> uppercdt;
-	std::vector<double> lowercdt;
-	
-	new_cdt.resize(s_pde_model.m_nt, std::vector<double>(cdt.size()));
-	uppercdt.resize(s_pde_model.m_nt);
-	lowercdt.resize(s_pde_model.m_nt);
-	
-	for (int j = 0; j<s_pde_model.m_nt; ++j)
-	{
-		for (int i = 0; i<cdt.size(); ++i)
-		{
-			new_cdt[j][i] = cdt[i] * exp(- s_pde_model.m_r[j] * s_pde_model.m_dt*j);
-			//new_cdt[j][i] = cdt[i];
 
-
-		}
-		
-		uppercdt[j] = payoff(s_pde_model.getName(), new_cdt[j]).getpayoff()(exp(s_pde_model.m_Smax));
-		lowercdt[j] = payoff(s_pde_model.getName(), new_cdt[j]).getpayoff()(exp(s_pde_model.m_Smin));
-		
-	}
-	
-	return {lowercdt, uppercdt};
-	
-}
-
-
-std::vector<std::vector<double>> solver_edp::getNeumann()
-{
-
-	double h = 0.000001;
-	
-	std::vector<double> cdt = s_pde_model.getStrike();
-	std::vector<std::vector<double>> neu_cdt;
-	std::vector<double> uppercdt;
-	std::vector<double> lowercdt;
-	
-	neu_cdt.resize(s_pde_model.m_nt, std::vector<double>(cdt.size()));
-	uppercdt.resize(s_pde_model.m_nt);
-	lowercdt.resize(s_pde_model.m_nt);
-	
-	for (int j = 0; j<s_pde_model.m_nt; ++j)
-	{
-		for (int i = 0; i<cdt.size(); ++i)
-		{
-			neu_cdt[j][i] = cdt[i] * exp(- s_pde_model.m_r[j] * s_pde_model.m_dt*j);
-
-		}
-		
-		uppercdt[j] = exp(s_pde_model.m_Smax)*((payoff(s_pde_model.getName(), neu_cdt[j])).getpayoff()(exp(s_pde_model.m_Smax) + h) - payoff(s_pde_model.getName(), neu_cdt[j]).getpayoff()(exp(s_pde_model.m_Smax)))/h;
-		lowercdt[j] = exp(s_pde_model.m_Smin)*((payoff(s_pde_model.getName(), neu_cdt[j])).getpayoff()(exp(s_pde_model.m_Smin) + h) - payoff(s_pde_model.getName(), neu_cdt[j]).getpayoff()(exp(s_pde_model.m_Smin)))/h;
-
-	}
-	
-	return {lowercdt, uppercdt};
-	
-}
-
-std::vector<std::vector<double>> solver_edp::get_conditions(std::vector<std::vector<double>> conditions, std::string method)
-{	
-	
-	std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
-	if (std::equal(conditions[0].begin(), conditions[0].end(), c[0].begin()) && std::equal(conditions[1].begin(), conditions[1].end(), c[1].begin()))
-	{
-		if (CaseSensitiveIsEqual(method, "Dirichlet"))
-		{
-			std::vector<std::vector<double>> drchlt = getDirichelet();
-			conditions.resize(2, std::vector<double>(s_pde_model.m_nt));
-			conditions = drchlt;
-		}
-		else if (CaseSensitiveIsEqual(method, "Neumann"))
-		{
-			std::vector<std::vector<double>> Neu = getNeumann();
-			conditions.resize(2, std::vector<double>(s_pde_model.m_nt));
-			conditions = Neu;
-		}
-		else
-		{
-			std::cout<< "Issue with the name of the method" << std::endl;
-		}
-	}
-	
-	return conditions;
-}

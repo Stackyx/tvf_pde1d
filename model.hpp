@@ -25,6 +25,7 @@ public:
 private:
 	
 	friend class solver_edp;
+	friend class bound;
 	
 	double m_dt;
 	double m_T;
