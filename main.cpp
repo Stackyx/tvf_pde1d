@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 	double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
-	double r = 0.02;
+	double r = 0.00;
 	
 	int nx = 1000;
 	int nt = 365;
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 	//model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
 	
 	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
-	solver_model.solve_pde();
+	solver_model.solve_pde(1);
 	// std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
 	// std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
 	// std::cout<< model_pde.get_vol_col(0).size() << std::endl;
@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 	for(int i=0; i<solver_model.solution.size(); ++i)
 	{
 		double prix = bs_price(exp(sMin+i*dx)/exp(-r*mat), S, vol, mat, 1)*exp(-r*mat);
-		std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< std::endl;
+		std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< ", vega = " << solver_model.vega[i]<<std::endl;
 	}
 	
 

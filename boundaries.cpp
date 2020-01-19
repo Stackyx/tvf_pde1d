@@ -48,7 +48,7 @@ void bound::get_boundaries(double ri, double ri1, double sigma0, double sigma1, 
 	}
 	else
 	{
-		get_boundaries_cdt(j, sol);
+		get_boundaries_cdt(ri, ri1,sigma0, sigma1, T, dt, j, sol);
 	}
 	
 }
@@ -84,78 +84,31 @@ void bound::get_boundaries_nocdt(double ri, double ri1, double sigma0, double si
 		sol[0] = (sol[0] - dt*(1./2.*sigma0*sigma0-ri)*temp_b_down + dt/2.*sigma0*sigma0*(2*sol[1]-2*temp_b_down*b_mesh.get_nx())/(b_mesh.get_nx()*b_mesh.get_nx()))/(dt*sigma0*sigma0/(b_mesh.get_nx()*b_mesh.get_nx())+ri*dt+1);
 		sol[b_mesh.get_nx()-1] = (sol[b_mesh.get_nx()-1] - dt*(1./2.*sigma1*sigma1-ri)*temp_b_up + dt/2.*sigma1*sigma1*(2*sol[b_mesh.get_nx()-2]+2*temp_b_up*b_mesh.get_nx())/(b_mesh.get_nx()*b_mesh.get_nx()))/(dt*sigma1*sigma1/(b_mesh.get_nx()*b_mesh.get_nx())+ri*dt+1);
 
-
-	//comment avoir sigma
-
 	}
 	
 }
 
-void bound::get_boundaries_cdt(double j, std::vector<double>& sol)
+void bound::get_boundaries_cdt(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol)
 {
-	sol[0] = b_conditions[j][0];
-	sol[b_mesh.get_nx()-1] = b_conditions[j][1];
 	
+	if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
+	{
+		sol[0] = b_conditions[j][0];
+		sol[b_mesh.get_nx()-1] = b_conditions[j][1];
+	
+	}
+	
+	if (CaseSensitiveIsEqual(b_method,"Neumann"))
+	{
+			
+		double temp_b_down = b_conditions[j][0];
+		double temp_b_up = b_conditions[j][1];
+
+		sol[0] = (sol[0] - dt*(1./2.*sigma0*sigma0-ri)*temp_b_down + dt/2.*sigma0*sigma0*(2*sol[1]-2*temp_b_down*b_mesh.get_nx())/(b_mesh.get_nx()*b_mesh.get_nx()))/(dt*sigma0*sigma0/(b_mesh.get_nx()*b_mesh.get_nx())+ri*dt+1);
+		sol[b_mesh.get_nx()-1] = (sol[b_mesh.get_nx()-1] - dt*(1./2.*sigma1*sigma1-ri)*temp_b_up + dt/2.*sigma1*sigma1*(2*sol[b_mesh.get_nx()-2]+2*temp_b_up*b_mesh.get_nx())/(b_mesh.get_nx()*b_mesh.get_nx()))/(dt*sigma1*sigma1/(b_mesh.get_nx()*b_mesh.get_nx())+ri*dt+1);
+
+	}
+	
+	
+
 }
-
-
-// std::vector<std::vector<double>> bound::getDirichelet()
-// {
-	// std::vector<double> cdt = m_pde_model.getStrike();
-	// std::vector<std::vector<double>> new_cdt;
-	// std::vector<double> uppercdt;
-	// std::vector<double> lowercdt;
-	
-	// new_cdt.resize(m_grille.m_nt, std::vector<double>(cdt.size()));
-	// uppercdt.resize(m_grille.m_nt);
-	// lowercdt.resize(m_grille.m_nt);
-	
-	// for (int j = 0; j<m_grille.m_nt; ++j)
-	// {
-		// for (int i = 0; i<cdt.size(); ++i)
-		// {
-			// new_cdt[j][i] = cdt[i] * std::exp(- m_pde_model.m_r[j] * m_grille.m_dt*j);
-
-		// }
-		
-		// uppercdt[j] = payoff(m_pde_model.getName(), new_cdt[j]).getpayoff()(std::exp(m_grille.m_Smax));
-		// lowercdt[j] = payoff(m_pde_model.getName(), new_cdt[j]).getpayoff()(std::exp(m_grille.m_Smin));
-		
-	// }
-	
-	// return {lowercdt, uppercdt};
-	
-// }
-
-
-// std::vector<std::vector<double>> bound::getNeumann()
-// {
-
-	// double h = 0.000001;
-	
-	// std::vector<double> cdt = m_pde_model.getStrike();
-	// std::vector<std::vector<double>> neu_cdt;
-	// std::vector<double> uppercdt;
-	// std::vector<double> lowercdt;
-	
-	// neu_cdt.resize(m_grille.m_nt, std::vector<double>(cdt.size()));
-	// uppercdt.resize(m_grille.m_nt);
-	// lowercdt.resize(m_grille.m_nt);
-	
-	// for (int j = 0; j<m_grille.m_nt; ++j)
-	// {
-		// for (int i = 0; i<cdt.size(); ++i)
-		// {
-			// neu_cdt[j][i] = cdt[i] * std::exp(- m_pde_model.m_r[j] * m_grille.m_dt*j);
-
-		// }
-		
-		// uppercdt[j] = std::exp(m_grille.m_Smax)*((payoff(m_pde_model.getName(), neu_cdt[j])).getpayoff()(std::exp(m_grille.m_Smax) + h) - payoff(m_pde_model.getName(), neu_cdt[j]).getpayoff()(std::exp(m_grille.m_Smax)))/h;
-		// lowercdt[j] = std::exp(m_grille.m_Smin)*((payoff(m_pde_model.getName(), neu_cdt[j])).getpayoff()(std::exp(m_grille.m_Smin) + h) - payoff(m_pde_model.getName(), neu_cdt[j]).getpayoff()(std::exp(m_grille.m_Smin)))/h;
-
-	// }
-	
-	// return {lowercdt, uppercdt};
-	
-// }
-

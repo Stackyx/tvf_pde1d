@@ -16,7 +16,7 @@ public:
 	void get_boundaries(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol);
 	
 private:
-	void get_boundaries_cdt(double j, std::vector<double>& sol);
+	void get_boundaries_cdt(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol);
 	void get_boundaries_nocdt(double ri, double ri1,double sigma0, double sigma1, double T, double	dt, double j, std::vector<double>& sol);
 	
 	payoff b_f;
