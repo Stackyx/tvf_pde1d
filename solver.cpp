@@ -16,36 +16,37 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	double s_min(s_mesh.get_Smin());
 	double s_max(s_mesh.get_Smax());
 	
-	std::vector<double> sol(s_mesh.get_nx());
+	solution.resize(s_mesh.get_nx());
+	
 	std::vector<double> vect(s_mesh.get_nx());
-	std::vector<double> sigma, sigma_plus;
+	std::vector<double> sigma(s_mesh.get_nx()), sigma_plus(s_mesh.get_nx());
 	
 	double r;
 		
-	s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), (s_mesh.get_nt()-1)*dt, (s_mesh.get_nt()-1)*dt, sol[0], sol[s_mesh.get_nx()-1]);
+	s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), (s_mesh.get_nt()-1)*dt, (s_mesh.get_nt()-1)*dt, solution[0], solution[s_mesh.get_nx()-1]);
 	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
 		
-	for(int i=1; i< sol.size()-1; ++i)
+	for(int i=1; i< solution.size()-1; ++i)
 	{
-		sol[i] = s_f.getpayoff()(exp(s_min + i*dx));
+		solution[i] = s_f.getpayoff()(exp(s_min + i*dx));
 	}
 
 	for(int i = s_mesh.get_nt() - 1; i > 0; --i)
 	{
 		
-		sigma_plus = s_pde_model.get_vol_col(i);
-		sigma = s_pde_model.get_vol_col(i-1);
+		s_pde_model.get_vol_col(sigma_plus, i);
+		s_pde_model.get_vol_col(sigma, i-1);
 		r = s_pde_model.get_r(i);
 		
 		pde_matrix_to_inverse(pde_mat_inv, sigma, r, s_theta, dt, dx, s_mesh.get_nx(), i);
 		pde_matrix(pde_mat, sigma_plus, r, s_theta, dt, dx, s_mesh.get_nx(), i);
 		
-		trig_matmul(vect, pde_mat, sol);
-		product_inverse(sol, pde_mat_inv, vect); 
+		trig_matmul(vect, pde_mat, solution);
+		product_inverse(solution, pde_mat_inv, vect); 
 
-		s_bound.get_boundaries(s_pde_model.get_r(i-1), (s_mesh.get_nt()-1)*dt, (i-1)*dt, sol[0], sol[s_mesh.get_nx()-1]);
+		s_bound.get_boundaries(s_pde_model.get_r(i-1), (s_mesh.get_nt()-1)*dt, (i-1)*dt, solution[0], solution[s_mesh.get_nx()-1]);
 		
 		// Mettre neumann dans boundaries
 		
@@ -57,18 +58,16 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		
 	}
 	
-	delta.resize(sol.size()-2);
-	gamma.resize(sol.size()-2);
+	delta.resize(solution.size()-2);
+	gamma.resize(solution.size()-2);
 	
-	for(int i=1; i < sol.size()-2; ++i)
+	for(int i=1; i < solution.size()-2; ++i)
 	{
 		double dxi = exp(s_min+(i)*s_mesh.get_nx()) - exp(s_min + (i-1)*s_mesh.get_nx());
 		double dxi1 = exp(s_min + (i+1)*s_mesh.get_nx()) - exp(s_min + i*s_mesh.get_nx());
-		delta[i-1] = (sol[i+1] - sol[i-1])/(dxi+dxi1);
-		gamma[i-1] = (sol[i+1] - 2*sol[i] + sol[i-1])/(dxi*dxi1);
+		delta[i-1] = (solution[i+1] - solution[i-1])/(dxi+dxi1);
+		gamma[i-1] = (solution[i+1] - 2*solution[i] + solution[i-1])/(dxi*dxi1);
 	}
-	
-	solution = sol;
 	
 	// A corriger avec les nouvelles classes : 
 	

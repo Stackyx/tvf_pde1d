@@ -109,9 +109,12 @@ model::model(const std::vector<std::vector<double>>& sigma, const std::vector<do
 {
 }
 
-std::vector<double> model::get_vol_col(const int& i)
-{
-	return getCol(m_sigma, i);
+void model::get_vol_col(std::vector<double>& mat, const int& i)
+{	
+	for (int j = 0; j < mat.size(); ++j)
+	{
+		mat[j] = m_sigma[j][i];
+	}
 }
 
 double model::get_r(const int&i)
@@ -122,19 +125,6 @@ double model::get_r(const int&i)
 std::vector<std::vector<double>>  model::getSigma()
 {
 	return m_sigma;
-}
-
-
-std::vector<double> getCol(std::vector<std::vector<double>> mat, int i)
-{
-	std::vector<double> temp;
-	temp.resize(mat.size());
-	
-	for (int j = 0; j < (mat.size()); ++j) {
-		temp[j] = mat[j][i];
-	}
-	
-	return temp;
 }
 
 #endif
