@@ -53,7 +53,7 @@ model::model(const std::vector<double>& sigma, double r, int n_t, int n_x)
 
 	}
 
-model::model(double sigma, const std::vector<double>& r, double T, int n_t, int n_x)
+model::model(double sigma, const std::vector<double>& r, int n_t, int n_x)
 	: m_r(r)
 	{	
 	
@@ -120,6 +120,11 @@ void model::get_vol_col(std::vector<double>& mat, const int& i)
 double model::get_r(const int&i)
 {
 	return m_r[i];
+}
+
+std::vector<double> model::get_r()
+{
+	return m_r;
 }
 
 std::vector<std::vector<double>>  model::getSigma()

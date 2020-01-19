@@ -22,8 +22,10 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	std::vector<double> sigma(s_mesh.get_nx()), sigma_plus(s_mesh.get_nx());
 	
 	double r;
-		
-	s_bound.get_boundaries(r, s_pde_model.get_r(s_mesh.get_nt()-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), solution);
+	
+	s_pde_model.get_vol_col(sigma,s_mesh.get_nt()-1);
+
+	s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), s_pde_model.get_r(s_mesh.get_nt()-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), solution); 
 	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
@@ -45,15 +47,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		trig_matmul(vect, pde_mat, solution);
 		product_inverse(solution, pde_mat_inv, vect); 
 
-		s_bound.get_boundaries(s_pde_model.get_r(i-1), (s_mesh.get_nt()-1)*dt, dt, (i-1), solution);
-		
-		// Mettre neumann dans boundaries
-		
-		// else if (s_method == "Neumann")
-		// {
-			// sol[0] = (sol[0] - dt*(1./2.*sigma[0]*sigma[0]-r)*boundaries[0][i-1] + dt/2.*sigma[0]*sigma[0]*(2*sol[1]-2*boundaries[0][i-1]*dx)/(dx*dx))/(dt*sigma[0]*sigma[0]/(dx*dx)+r*dt+1);
-			// sol[s_mesh.get_nx()-1] = (sol[s_mesh.get_nx()-1] - dt*(1./2.*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]-r)*boundaries[1][i-1] + dt/2.*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]*(2*sol[s_mesh.get_nx()-2]+2*boundaries[1][i-1]*dx)/(dx*dx))/(dt*sigma[s_mesh.get_nx()-1]*sigma[s_mesh.get_nx()-1]/(dx*dx)+r*dt+1);
-		// }
+		s_bound.get_boundaries(r, s_pde_model.get_r(i-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (i-1), solution);
 		
 	}
 	
@@ -70,29 +64,29 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	
 	// A corriger avec les nouvelles classes : 
 	
-	// if(vega_bool){
-		// std::vector<double> sol2(s_mesh.get_nx());
-		// std::vector<std::vector<double>> vol_bump = s_pde_model.m_sigma;
-		// double h = 0.01;
-		// auto lambda = [h](double d1) { return d1 + h; };
+	if(vega_bool){
+		std::vector<double> sol2(s_mesh.get_nx());
+		std::vector<std::vector<double>> vol_bump = s_pde_model.getSigma();
+		double h = 0.01;
+		auto lambda = [h](double d1) { return d1 + h; };
 
-		// for(int c = 0; c<s_pde_model.m_sigma[0].size(); ++c)
-		// {
-			// std::transform(vol_bump[c].begin(), vol_bump[c].end(), vol_bump[c].begin(), lambda);
-		// }
-		// model model_bump_vol(s_pde_model.m_initS, vol_bump, s_pde_model.m_Smin, s_pde_model.m_Smax ,s_pde_model.m_r, s_pde_model.m_T, s_pde_model.m_nt , s_pde_model.m_nx, s_pde_model.m_theta, s_pde_model.m_f);
-		// solver_edp sol2_edp(model_bump_vol, s_grille, s_method, s_cdt);
-		// sol2_edp.solve_pde();
-		// sol2 = sol2_edp.solution;
+		for(int c = 0; c<vol_bump[0].size(); ++c)
+		{
+			std::transform(vol_bump[c].begin(), vol_bump[c].end(), vol_bump[c].begin(), lambda);
+		}
+		model model_bump_vol(vol_bump, s_pde_model.get_r());
+		solver_edp sol2_edp(model_bump_vol, s_mesh, s_bound, s_f, s_theta);
+		sol2_edp.solve_pde();
+		sol2 = sol2_edp.solution;
 
-		// vega.resize(sol2.size());
+		vega.resize(sol2.size());
 
-		// for (int c = 0; c<sol2.size(); ++c)
-		// {
-			// vega[c] = (sol2[c] - solution[c])/h;
-		// }
+		for (int c = 0; c<sol2.size(); ++c)
+		{
+			vega[c] = (sol2[c] - solution[c])/h;
+		}
 
-	// }
+	}
 }
 
 void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, const std::vector<double>& sigma, const std::vector<double>& sigma_plus, double r, double theta, double dt, double dx, int nx, int i)
