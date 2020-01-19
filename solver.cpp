@@ -23,7 +23,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	
 	double r;
 		
-	s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), (s_mesh.get_nt()-1)*dt, (s_mesh.get_nt()-1)*dt, solution[0], solution[s_mesh.get_nx()-1]);
+	s_bound.get_boundaries(r, s_pde_model.get_r(s_mesh.get_nt()-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), solution);
 	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
@@ -45,7 +45,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		trig_matmul(vect, pde_mat, solution);
 		product_inverse(solution, pde_mat_inv, vect); 
 
-		s_bound.get_boundaries(s_pde_model.get_r(i-1), (s_mesh.get_nt()-1)*dt, (i-1)*dt, solution[0], solution[s_mesh.get_nx()-1]);
+		s_bound.get_boundaries(s_pde_model.get_r(i-1), (s_mesh.get_nt()-1)*dt, dt, (i-1), solution);
 		
 		// Mettre neumann dans boundaries
 		

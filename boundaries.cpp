@@ -4,26 +4,100 @@
 #include <numeric>
 #include "boundaries.hpp"
 
-bound::bound(payoff f, mesh grille, std::string method, std::vector<std::vector<double>> conditions)
-	: b_f(f), b_mesh(grille), b_method(method)
+bound::bound(payoff f, mesh grille)
+	: b_f(f), b_mesh(grille)
 {
+	 b_method = "Dirichelet";
+	 b_conditions = {{0,0}, {0,0}};
 }
 
-void bound::get_boundaries(double r, double T, double t, double& b_down, double& b_up)
+bound::bound(payoff f, mesh grille, std::string method, std::vector<std::vector<double>> conditions)
+	: b_f(f), b_mesh(grille), b_method(method), b_conditions(conditions)
 {
-	if (b_method == "Dirichlet")
+	if ((!(CaseSensitiveIsEqual(b_method,"Dirichlet"))) && (!(CaseSensitiveIsEqual(b_method,"Neumann"))))
 	{
-		strikes = b_f.getparameters();
-		
-		for (int i = 0; i < strikes.size(); ++i)
-		{
-			strikes[i] = strikes[i] * std::exp(-r * (T-t));
-		}
-		
-		b_up = payoff(b_f.getname(), strikes).getpayoff()(std::exp(b_mesh.get_Smax()));
-		b_down = payoff(b_f.getname(), strikes).getpayoff()(std::exp(b_mesh.get_Smin()));
+		std::cout<< "please enter Dirichelet or Neumann only" << std::endl;
 	}
 }
+
+bound::bound(payoff f, mesh grille, std::string method)
+	: b_f(f), b_mesh(grille), b_method(method)
+{
+	b_conditions = {{0,0}, {0,0}};
+	if ((!(CaseSensitiveIsEqual(b_method,"Dirichlet"))) && (!(CaseSensitiveIsEqual(b_method,"Neumann"))))
+	{
+		std::cout<< "please enter Dirichelet or Neumann only" << std::endl;
+	}	
+}
+
+bound::bound(payoff f, mesh grille,std::vector<std::vector<double>> conditions)
+	: b_f(f), b_mesh(grille), b_conditions(conditions)
+{
+	b_method = "Dirichelet";
+}
+
+
+
+void bound::get_boundaries(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol)
+{
+	
+	std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
+	if (std::equal(b_conditions[0].begin(), b_conditions[0].end(), c[0].begin()) && std::equal(b_conditions[1].begin(), b_conditions[1].end(), c[1].begin()))
+	{
+		get_boundaries_nocdt(ri, ri1,sigma0, sigma1, T, dt, j, sol);
+	}
+	else
+	{
+		get_boundaries_cdt(j, sol);
+	}
+	
+}
+
+void bound::get_boundaries_nocdt(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol)
+{
+	if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
+	{
+		b_strikes = b_f.getparameters();
+		
+		for (int i = 0; i < b_strikes.size(); ++i)
+		{
+			b_strikes[i] = b_strikes[i] * std::exp(-ri1 * (T-dt*j));
+		}
+		
+		sol[b_mesh.get_nx()-1] = payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smax()));
+		sol[0] = payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smin()));
+	}
+	
+	if (CaseSensitiveIsEqual(b_method,"Neumann"))
+	{
+		double h = 0.000001;
+		b_strikes = b_f.getparameters();
+		
+		for (int i = 0; i < b_strikes.size(); ++i)
+		{
+			b_strikes[i] = b_strikes[i] * std::exp(-ri1 * (T-dt*j));
+		}
+		
+		double temp_b_up = std::exp(b_mesh.get_Smin())*(payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smax()) + h) - payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smax())))/h;
+		double temp_b_down = std::exp(b_mesh.get_Smin())*(payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smin()) + h) - payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smin())))/h;
+		
+		sol[0] = (sol[0] - dt*(1./2.*sigma0*sigma0-ri)*temp_b_down + dt/2.*sigma0*sigma0*(2*sol[1]-2*temp_b_down*b_mesh.get_nx())/(b_mesh.get_nx()*b_mesh.get_nx()))/(dt*sigma0*sigma0/(b_mesh.get_nx()*b_mesh.get_nx())+ri*dt+1);
+		sol[b_mesh.get_nx()-1] = (sol[b_mesh.get_nx()-1] - dt*(1./2.*sigma1*sigma1-ri)*temp_b_up + dt/2.*sigma1*sigma1*(2*sol[b_mesh.get_nx()-2]+2*temp_b_up*b_mesh.get_nx())/(b_mesh.get_nx()*b_mesh.get_nx()))/(dt*sigma1*sigma1/(b_mesh.get_nx()*b_mesh.get_nx())+ri*dt+1);
+
+
+	//comment avoir sigma
+
+	}
+	
+}
+
+void bound::get_boundaries_cdt(double j, std::vector<double>& sol)
+{
+	sol[0] = b_conditions[j][0];
+	sol[b_mesh.get_nx()-1] = b_conditions[j][1];
+	
+}
+
 
 // std::vector<std::vector<double>> bound::getDirichelet()
 // {
@@ -85,29 +159,3 @@ void bound::get_boundaries(double r, double T, double t, double& b_down, double&
 	
 // }
 
-// std::vector<std::vector<double>> bound::get_conditions(std::vector<std::vector<double>> conditions, std::string method)
-// {	
-	
-	// std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
-	// if (std::equal(conditions[0].begin(), conditions[0].end(), c[0].begin()) && std::equal(conditions[1].begin(), conditions[1].end(), c[1].begin()))
-	// {
-		// if (CaseSensitiveIsEqual(method, "Dirichlet"))
-		// {
-			// std::vector<std::vector<double>> drchlt = getDirichelet();
-			// conditions.resize(2, std::vector<double>(m_grille.m_nt));
-			// conditions = drchlt;
-		// }
-		// else if (CaseSensitiveIsEqual(method, "Neumann"))
-		// {
-			// std::vector<std::vector<double>> Neu = getNeumann();
-			// conditions.resize(2, std::vector<double>(m_grille.m_nt));
-			// conditions = Neu;
-		// }
-		// else
-		// {
-			// std::cout<< "Issue with the name of the method" << std::endl;
-		// }
-	// }
-	
-	// return conditions;
-// }
