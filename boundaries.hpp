@@ -10,7 +10,7 @@ public:
 
 	bound(payoff f, mesh grille, std::string method = "Dirichlet", std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
 	
-	void get_boundaries(double r, double t, double dt, double& b_down, double& b_up);
+	void get_boundaries(double r, double T, double t, double& b_down, double& b_up);
 	
 private:
 	std::vector<std::vector<double>> bound::getNeumann();
@@ -19,8 +19,10 @@ private:
 	
 	payoff b_f;
 	mesh b_mesh;
+	
 	std::string b_method;
-	std::vector<std::vector<double>> m_cdt;
+	std::vector<double> strikes;
+	
 };
 	
 
