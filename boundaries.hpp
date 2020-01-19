@@ -8,20 +8,23 @@ class bound
 {
 public:
 
-	bound(payoff f, mesh grille, std::string method = "Dirichlet", std::vector<std::vector<double>> conditions = {{0, 0}, {0,0}});
+	bound(payoff f, mesh grille, std::string method, std::vector<std::vector<double>> conditions);
+	bound(payoff f, mesh grille, std::string method);
+	bound(payoff f, mesh grille, std::vector<std::vector<double>> conditions);
+	bound(payoff f, mesh grille);
 	
-	void get_boundaries(double r, double T, double t, double& b_down, double& b_up);
+	void get_boundaries(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol);
 	
 private:
-	std::vector<std::vector<double>> bound::getNeumann();
-	std::vector<std::vector<double>> bound::getDirichelet();
-	std::vector<std::vector<double>> bound::get_conditions(std::vector<std::vector<double>> conditions, std::string method);
+	void get_boundaries_cdt(double j, std::vector<double>& sol);
+	void get_boundaries_nocdt(double ri, double ri1,double sigma0, double sigma1, double T, double	dt, double j, std::vector<double>& sol);
 	
 	payoff b_f;
 	mesh b_mesh;
 	
 	std::string b_method;
-	std::vector<double> strikes;
+	std::vector<double> b_strikes;
+	std::vector<std::vector<double>> b_conditions;
 	
 };
 	
