@@ -7,22 +7,21 @@
 bound::bound(payoff f, mesh grille, std::string method, std::vector<std::vector<double>> conditions)
 	: b_f(f), b_mesh(grille), b_method(method)
 {
-	//m_cdt = get_conditions(conditions, m_method);
 }
 
-void bound::get_boundaries(double r, double t, double dt, double& b_down, double& b_up)
+void bound::get_boundaries(double r, double T, double t, double& b_down, double& b_up)
 {
 	if (b_method == "Dirichlet")
 	{
-		std::vector<double> strike = b_f.getparameters();
-	
-		for (int i = 0; i < strike.size(); ++i)
+		strikes = b_f.getparameters();
+		
+		for (int i = 0; i < strikes.size(); ++i)
 		{
-			strike[i] = strike[i] * std::exp(-r * t * dt);
+			strikes[i] = strikes[i] * std::exp(-r * (T-t));
 		}
 		
-		b_up = payoff(b_f.getname(), strike).getpayoff()(std::exp(b_mesh.get_Smax()));
-		b_down = payoff(b_f.getname(), strike).getpayoff()(std::exp(b_mesh.get_Smin()));
+		b_up = payoff(b_f.getname(), strikes).getpayoff()(std::exp(b_mesh.get_Smax()));
+		b_down = payoff(b_f.getname(), strikes).getpayoff()(std::exp(b_mesh.get_Smin()));
 	}
 }
 
