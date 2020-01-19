@@ -40,8 +40,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		s_pde_model.get_vol_col(sigma, i-1);
 		r = s_pde_model.get_r(i);
 		
-		pde_matrix_to_inverse(pde_mat_inv, sigma, r, s_theta, dt, dx, s_mesh.get_nx(), i);
-		pde_matrix(pde_mat, sigma_plus, r, s_theta, dt, dx, s_mesh.get_nx(), i);
+		pde_matrix(pde_mat, pde_mat_inv, sigma, sigma_plus, r, s_theta, dt, dx, s_mesh.get_nx(), i);
 		
 		trig_matmul(vect, pde_mat, solution);
 		product_inverse(solution, pde_mat_inv, vect); 
@@ -96,30 +95,24 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	// }
 }
 
-void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i)
+void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, const std::vector<double>& sigma, const std::vector<double>& sigma_plus, double r, double theta, double dt, double dx, int nx, int i)
 {	
 	mat[1][0] = 1;
 	mat[1][nx-1] = 1;
+	
+	mat_inv[1][0] = 1;
+	mat_inv[1][nx-1] = 1;
 
 	for(int j = 1; j<nx-1; ++j)
 	{
-		mat[1][j] = 1 - dt*(1-theta)*(pow(sigma[j]/dx,2) + r);
-		mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
-		mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
+		mat[1][j] = 1 - dt*(1-theta)*(pow(sigma_plus[j]/dx,2) + r);
+		mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx + pow(sigma_plus[j],2)/2. - r);
+		mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx - pow(sigma_plus[j],2)/2. + r);
+		
+		mat_inv[1][j] = 1+dt*theta*(pow(sigma[j]/dx,2) + r);
+		mat_inv[0][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
+		mat_inv[2][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
 	}
-}
-
-void solver_edp::pde_matrix_to_inverse(std::vector<std::vector<double>>& mat, const std::vector<double>& sigma, const double& r, const double& theta, const double& dt, const double& dx, const int& nx, const int& i){
-	mat[1][0] = 1;
-	mat[1][nx-1] = 1;
-	
-	for(int j = 1; j<nx-1; ++j)
-	{		
-		mat[1][j] = 1+dt*theta*(pow(sigma[j]/dx,2) + r);
-		mat[0][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
-		mat[2][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
-	}
-
 }
 
 void solver_edp::product_inverse(std::vector<double>& x, std::vector<std::vector<double>> trig_mat, std::vector<double> d)
