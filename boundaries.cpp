@@ -79,7 +79,6 @@ void bound::get_boundaries_nocdt(double ri, double ri1, double sigma0, double si
 		}
 		
 		double temp_b_up = std::exp(b_mesh.get_Smax())*(payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smax()) + h) - payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smax())))/h;
-		std::cout << temp_b_up << std::endl;
 		double temp_b_down = std::exp(b_mesh.get_Smin())*(payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smin()) + h) - payoff(b_f.getname(), b_strikes).getpayoff()(std::exp(b_mesh.get_Smin())))/h;
 		
 		sol[0] = (sol_back[0] - dt*(1./2.*sigma0*sigma0-ri)*temp_b_down + dt/2.*sigma0*sigma0*(2*sol[1]-2*temp_b_down*b_mesh.get_dx())/(b_mesh.get_dx()*b_mesh.get_dx()))/(dt*sigma0*sigma0/(b_mesh.get_dx()*b_mesh.get_dx())+ri*dt+1);
