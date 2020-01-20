@@ -70,13 +70,22 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	if(vega_bool){
 		std::vector<double> sol2(s_mesh.get_nx());
 		std::vector<std::vector<double>> vol_bump = s_pde_model.getSigma();
-		double h = 0.01;
+		double h = 0.0001;
 		auto lambda = [h](double d1) { return d1 + h; };
 
-		for(int c = 0; c<vol_bump[0].size(); ++c)
+		for(int c = 0; c<vol_bump.size(); ++c)
 		{
 			std::transform(vol_bump[c].begin(), vol_bump[c].end(), vol_bump[c].begin(), lambda);
 		}
+		
+		// for (int i=0; i<vol_bump[0].size();++i)
+		// {
+			// for (int j=0; j<vol_bump.size();++j)
+			// {
+				// vol_bump[j][i] += h;
+			// }
+		// }
+		
 		model model_bump_vol(vol_bump, s_pde_model.get_r());
 		solver_edp sol2_edp(model_bump_vol, s_mesh, s_bound, s_f, s_theta);
 		sol2_edp.solve_pde();

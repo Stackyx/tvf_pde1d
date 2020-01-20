@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 		cdt[i][1] = 1.;
 	}
 	
-	bound boundaries(pp, grille, "Neumann");
+	bound boundaries(pp, grille, "Dirichlet");
 	
 	// std::vector<double> r(10);
 	// std::vector<double> sigma(10);
