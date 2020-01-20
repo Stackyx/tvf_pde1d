@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 	
 	mesh grille(S, mat, nx, nt, vol);
 	model model_pde(vol, r, nt, nx);
-	bound boundaries(pp, grille, "Dirichlet");
+	bound boundaries(pp, grille, "Neumann");
 	
 	// std::vector<double> r(10);
 	// std::vector<double> sigma(10);
@@ -45,10 +45,8 @@ int main(int argc, char* argv[])
 	//model model_pde_sigma(100., sigma, 0.05, 1, 10, 10, 1./2, pp);
 	
 	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
-	solver_model.solve_pde(1);
-	// std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
-	// std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
-	// std::cout<< model_pde.get_vol_col(0).size() << std::endl;
+	solver_model.solve_pde();
+	
 	
 	double sMin = grille.get_Smin();
 	double dx = grille.get_dx();
@@ -56,7 +54,7 @@ int main(int argc, char* argv[])
 	for(int i=0; i<solver_model.solution.size(); ++i)
 	{
 		double prix = bs_price(exp(sMin+i*dx)/exp(-r*mat), S, vol, mat, 1)*exp(-r*mat);
-		std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< ", vega = " << solver_model.vega[i]<<std::endl;
+		std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<<std::endl;
 	}
 	
 

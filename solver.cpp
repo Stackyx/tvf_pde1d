@@ -25,12 +25,12 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	
 	s_pde_model.get_vol_col(sigma,s_mesh.get_nt()-1);
 
-	s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), s_pde_model.get_r(s_mesh.get_nt()-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), solution); 
+	//s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), s_pde_model.get_r(s_mesh.get_nt()-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), sol[0], sol[s_mesh.get_nx()-1], sol[1], sol[s_mesh.get_nx()-2]); 
 	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
 		
-	for(int i=1; i< solution.size()-1; ++i)
+	for(int i=0; i< solution.size(); ++i)
 	{
 		solution[i] = s_f.getpayoff()(exp(s_min + i*dx));
 	}
@@ -47,7 +47,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		trig_matmul(vect, pde_mat, solution);
 		product_inverse(solution, pde_mat_inv, vect); 
 
-		s_bound.get_boundaries(r, s_pde_model.get_r(i-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (i-1), solution);
+		s_bound.get_boundaries(r, s_pde_model.get_r(i-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (i-1),  solution[0], solution[s_mesh.get_nx()-1], solution[1], solution[s_mesh.get_nx()-2]);
 		
 	}
 	
