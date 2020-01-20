@@ -24,16 +24,16 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	double r;
 	
 	s_pde_model.get_vol_col(sigma,s_mesh.get_nt()-1);
-
+	
+	for(int i=0; i< solution.size(); ++i)
+	{
+		solution[i] = s_f.getpayoff()(exp(s_min + i*dx));
+	}
+	
 	s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), s_pde_model.get_r(s_mesh.get_nt()-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), solution); 
 	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
-		
-	for(int i=1; i< solution.size()-1; ++i)
-	{
-		solution[i] = s_f.getpayoff()(exp(s_min + i*dx));
-	}
 
 	for(int i = s_mesh.get_nt() - 1; i > 0; --i)
 	{
