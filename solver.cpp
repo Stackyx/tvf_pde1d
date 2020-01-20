@@ -17,11 +17,13 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	double s_max(s_mesh.get_Smax());
 	
 	solution.resize(s_mesh.get_nx());
+	std::vector<double> sol_back(s_mesh.get_nx());
 	
 	std::vector<double> vect(s_mesh.get_nx());
 	std::vector<double> sigma(s_mesh.get_nx()), sigma_plus(s_mesh.get_nx());
 	
 	double r;
+	double r_plus;
 	
 	s_pde_model.get_vol_col(sigma,s_mesh.get_nt()-1);
 	
@@ -30,7 +32,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		solution[i] = s_f.getpayoff()(exp(s_min + i*dx));
 	}
 	
-	s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), s_pde_model.get_r(s_mesh.get_nt()-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), solution); 
+	s_bound.get_boundaries(s_pde_model.get_r(s_mesh.get_nt()-1), s_pde_model.get_r(s_mesh.get_nt()-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), solution, solution); 
 	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
@@ -40,14 +42,17 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		
 		s_pde_model.get_vol_col(sigma_plus, i);
 		s_pde_model.get_vol_col(sigma, i-1);
-		r = s_pde_model.get_r(i);
+		r_plus = s_pde_model.get_r(i);
+		r = s_pde_model.get_r(i-1);
 		
-		pde_matrix(pde_mat, pde_mat_inv, sigma, sigma_plus, r, s_theta, dt, dx, s_mesh.get_nx(), i);
+		sol_back = solution;
+		
+		pde_matrix(pde_mat, pde_mat_inv, sigma, sigma_plus, r, r_plus, s_theta, dt, dx, s_mesh.get_nx(), i);
 		
 		trig_matmul(vect, pde_mat, solution);
 		product_inverse(solution, pde_mat_inv, vect); 
 
-		s_bound.get_boundaries(r, s_pde_model.get_r(i-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (i-1), solution);
+		s_bound.get_boundaries(r, s_pde_model.get_r(i-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (i-1), solution, sol_back);
 		
 	}
 	
@@ -61,8 +66,6 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		delta[i-1] = (solution[i+1] - solution[i-1])/(dxi+dxi1);
 		gamma[i-1] = (solution[i+1] - 2*solution[i] + solution[i-1])/(dxi*dxi1);
 	}
-	
-	// A corriger avec les nouvelles classes : 
 	
 	if(vega_bool){
 		std::vector<double> sol2(s_mesh.get_nx());
@@ -89,7 +92,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	}
 }
 
-void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, const std::vector<double>& sigma, const std::vector<double>& sigma_plus, double r, double theta, double dt, double dx, int nx, int i)
+void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, const std::vector<double>& sigma, const std::vector<double>& sigma_plus, double r, double r_plus, double theta, double dt, double dx, int nx, int i)
 {	
 	mat[1][0] = 1;
 	mat[1][nx-1] = 1;
@@ -99,9 +102,9 @@ void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<s
 
 	for(int j = 1; j<nx-1; ++j)
 	{
-		mat[1][j] = 1 - dt*(1-theta)*(pow(sigma_plus[j]/dx,2) + r);
-		mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx + pow(sigma_plus[j],2)/2. - r);
-		mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx - pow(sigma_plus[j],2)/2. + r);
+		mat[1][j] = 1 - dt*(1-theta)*(pow(sigma_plus[j]/dx,2) + r_plus);
+		mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx + pow(sigma_plus[j],2)/2. - r_plus);
+		mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx - pow(sigma_plus[j],2)/2. + r_plus);
 		
 		mat_inv[1][j] = 1+dt*theta*(pow(sigma[j]/dx,2) + r);
 		mat_inv[0][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
