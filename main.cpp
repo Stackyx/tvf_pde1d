@@ -20,14 +20,23 @@ int main(int argc, char* argv[])
 	double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
-	double r = 0.00;
+	double r = 0.02;
 	
 	int nx = 1000;
 	int nt = 365;
 	
 	mesh grille(S, mat, nx, nt, vol);
 	model model_pde(vol, r, nt, nx);
-	bound boundaries(pp, grille, "Dirichlet");
+	
+	std::vector<std::vector<double>> cdt(nt, std::vector<double>(2));
+	
+	for (int i=0; i<nt; ++i)
+	{
+		cdt[i][0] = 0;
+		cdt[i][1] = 1.;
+	}
+	
+	bound boundaries(pp, grille, "Neumann");
 	
 	// std::vector<double> r(10);
 	// std::vector<double> sigma(10);
