@@ -16,24 +16,21 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	double s_min(s_mesh.get_Smin());
 	double s_max(s_mesh.get_Smax());
 	
+	double T = dt*(s_mesh.get_nt()-1);
+	
 	solution.resize(s_mesh.get_nx());
-	std::vector<double> sol_back(s_mesh.get_nx());
 	
 	std::vector<double> vect(s_mesh.get_nx());
+	std::vector<double> sol_inter(s_mesh.get_nx());
+	
 	std::vector<double> sigma(s_mesh.get_nx()), sigma_plus(s_mesh.get_nx());
 	
-	double r;
+	double r(s_pde_model.get_r(s_mesh.get_nt()-1));
 	double r_plus;
 	
 	s_pde_model.get_vol_col(sigma,s_mesh.get_nt()-1);
 	
-	for(int i=0; i< solution.size(); ++i)
-	{
-		solution[i] = s_f.getpayoff()(exp(s_min + i*dx));
-	}
-	
-	//s_bound.get_boundaries((s_mesh.get_nt()-1)*dt, dt, (s_mesh.get_nt()-1), solution, solution); 
-	s_bound.get_boundaries(solution);
+	s_bound.get_boundaries(solution, T, dt, s_mesh.get_nt()-1, r); // Compute terminal conditions
 	
 	std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
 	std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
@@ -46,16 +43,14 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		r_plus = s_pde_model.get_r(i);
 		r = s_pde_model.get_r(i-1);
 		
-		//sol_back = solution;
-		
 		pde_matrix(pde_mat, pde_mat_inv, sigma, sigma_plus, r, r_plus, s_theta, dt, dx, s_mesh.get_nx(), i);
 		s_bound.adapt_mat(pde_mat,pde_mat_inv, s_theta, r, sigma);
 		
 		trig_matmul(vect, pde_mat, solution);
 		product_inverse(solution, pde_mat_inv, vect); 
 
-		//s_bound.get_boundaries(r, s_pde_model.get_r(i-1), sigma[0], sigma[s_mesh.get_nt()-1], (s_mesh.get_nt()-1)*dt, dt, (i-1), solution, sol_back);
-		s_bound.get_boundaries(solution);
+		s_bound.get_boundaries(solution, T, dt, i-1, r);
+
 	}
 	
 	delta.resize(solution.size()-2);
@@ -80,14 +75,6 @@ void solver_edp::solve_pde(const bool& vega_bool)
 			std::transform(vol_bump[c].begin(), vol_bump[c].end(), vol_bump[c].begin(), lambda);
 		}
 		
-		// for (int i=0; i<vol_bump[0].size();++i)
-		// {
-			// for (int j=0; j<vol_bump.size();++j)
-			// {
-				// vol_bump[j][i] += h;
-			// }
-		// }
-		
 		model model_bump_vol(vol_bump, s_pde_model.get_r());
 		solver_edp sol2_edp(model_bump_vol, s_mesh, s_bound, s_f, s_theta);
 		sol2_edp.solve_pde();
@@ -107,7 +94,7 @@ void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<s
 {	
 	mat[1][0] = 1;
 	mat[1][nx-1] = 1;
-	
+
 	mat_inv[1][0] = 1;
 	mat_inv[1][nx-1] = 1;
 
