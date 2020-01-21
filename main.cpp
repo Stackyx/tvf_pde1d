@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 	double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
-	double r = 0.00;
+	double r = 0.0;
 	
 	int nx = 1000;
 	int nt = 365;
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 		// cdt[i][1] = 1.;
 	// }
 	
-	bound boundaries(pp, grille, "Neumann");
+	bound boundaries(pp, grille, "Dirichlet");
 	
 	// std::vector<double> r(10);
 	// std::vector<double> sigma(10);
@@ -55,10 +55,6 @@ int main(int argc, char* argv[])
 	
 	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
 	solver_model.solve_pde(1);
-	
-	// std::cout<< model_pde.getSigma().size() << std::endl;//taille colone
-	// std::cout<< model_pde.getSigma()[0].size() << std::endl;//ligne taille
-	// std::cout<< model_pde.get_vol_col(0).size() << std::endl;
 	
 	double sMin = grille.get_Smin();
 	double dx = grille.get_dx();

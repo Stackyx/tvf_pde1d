@@ -15,7 +15,7 @@ public:
 	
 	void adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, double theta, double r, std::vector<double> sigma);
 	//void get_boundaries(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol, const std::vector<double>& sol_back);
-	void get_boundaries(std::vector<double>& sol);
+	void get_boundaries(std::vector<double>& sol, double T, double dt, int i, double r);
 	
 	double get_cdt_up();
 	double get_cdt_down();
