@@ -8,9 +8,9 @@ class bound
 {
 public:
 
-	bound(payoff f, mesh grille, std::string method, std::vector<std::vector<double>> conditions);
+	bound(payoff f, mesh grille, std::string method, std::vector<double> conditions);
 	bound(payoff f, mesh grille, std::string method);
-	bound(payoff f, mesh grille, std::vector<std::vector<double>> conditions);
+	bound(payoff f, mesh grille, std::vector<double> conditions);
 	bound(payoff f, mesh grille);
 	
 	void adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, double theta, double r, std::vector<double> sigma);
@@ -25,8 +25,8 @@ private:
 	
 	std::string b_method;
 	std::vector<double> b_strikes;
-	std::vector<std::vector<double>> b_conditions;
-	
+	double b_conditions_up;
+	double b_conditions_down;
 };
 	
 
