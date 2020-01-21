@@ -75,13 +75,29 @@ void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::ve
 }
 
 
+double bound::get_cdt_up()
+{
+	return b_conditions_up;
+}
+double bound::get_cdt_down()
+{
+	return b_conditions_down;
+}
+
 void bound::get_boundaries(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol, const std::vector<double>& sol_back)
 {
 	
-	std::vector<std::vector<double>> c = {{0, 0}, {0,0}};
+	if (CaseSensitiveIsEqual(b_method,"Neumann"))
+	{
+		b_conditions_up * b_mesh.get_dx() + fn-1
+		-b_conditions_down * b_mesh.get_dx() + f1
+
+		
+	}
+	
 	// if (std::equal(b_conditions[0].begin(), b_conditions[0].end(), c[0].begin()) && std::equal(b_conditions[1].begin(), b_conditions[1].end(), c[1].begin()))
 	// {	
-		get_boundaries_nocdt(ri, ri1,sigma0, sigma1, T, dt, j, sol, sol_back);
+	//	get_boundaries_nocdt(ri, ri1,sigma0, sigma1, T, dt, j, sol, sol_back);
 	// }
 	// else
 	// {
