@@ -36,27 +36,26 @@ bound::bound(payoff f, mesh grille,std::vector<std::vector<double>> conditions)
 	b_method = "Dirichlet";
 }
 
-void adapt_mat(std::vector<std::vector<double>>& mat_inv)
+void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, double theta, double r, std::vector<double> sigma)
 {
 	if (CaseSensitiveIsEqual(b_method,"Neumann"))
 	{
-		mat_inv[1][0] = 1;
-		mat_inv[1][nx-1] = 1;
 		
-		for(int j = 1; j<nx-1; ++j)
-		{
-			mat[1][j] = 1 - dt*(1-theta)*(pow(sigma_plus[j]/dx,2) + r_plus);
-			mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx + pow(sigma_plus[j],2)/2. - r_plus);
-			mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx - pow(sigma_plus[j],2)/2. + r_plus);
+		double dx = b_mesh.get_dx();
+		double dt = b_mesh.get_dt();
+		
+		mat[1][0] = -1/dx;
+		mat[2][0] = 1/dx;
+		mat[0][b_mesh.get_nx()-1] = -1/dx;
+		mat[1][b_mesh.get_nx()-1] = 1/dx;
 			
-			mat_inv[1][j] = 1+dt*theta*(pow(sigma[j]/dx,2) + r);
-			mat_inv[0][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
-			mat_inv[2][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
-		}
+		mat_inv[1][1] = 1+dt*theta*(pow(sigma[1]/dx,2)*0.5 + r - (1./2.*sigma[1]*sigma[1] - r)/(2*dx));
+		mat_inv[0][1] = -dt*theta/(2*dx)*(-pow(sigma[1],2)/dx - pow(sigma[1],2)/2. + r)*dx;
+		
+		mat_inv[1][b_mesh.get_nx()-2] = 1+dt*theta*(pow(sigma[b_mesh.get_nx()-2]/dx,2)*0.5 + r + (1./2.*sigma[b_mesh.get_nx()-2]*sigma[b_mesh.get_nx()-2] - r)/(2*dx));
+		mat_inv[2][b_mesh.get_nx()-2] = dx * dt*theta/(2*dx)*(-pow(sigma[b_mesh.get_nx()-2],2)/dx + pow(sigma[b_mesh.get_nx()-2],2)/2. - r);
 	}
 	
-	
-
 	
 }
 
