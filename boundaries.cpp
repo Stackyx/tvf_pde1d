@@ -36,6 +36,29 @@ bound::bound(payoff f, mesh grille,std::vector<std::vector<double>> conditions)
 	b_method = "Dirichlet";
 }
 
+void adapt_mat(std::vector<std::vector<double>>& mat_inv)
+{
+	if (CaseSensitiveIsEqual(b_method,"Neumann"))
+	{
+		mat_inv[1][0] = 1;
+		mat_inv[1][nx-1] = 1;
+		
+		for(int j = 1; j<nx-1; ++j)
+		{
+			mat[1][j] = 1 - dt*(1-theta)*(pow(sigma_plus[j]/dx,2) + r_plus);
+			mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx + pow(sigma_plus[j],2)/2. - r_plus);
+			mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx - pow(sigma_plus[j],2)/2. + r_plus);
+			
+			mat_inv[1][j] = 1+dt*theta*(pow(sigma[j]/dx,2) + r);
+			mat_inv[0][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
+			mat_inv[2][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
+		}
+	}
+	
+	
+
+	
+}
 
 
 void bound::get_boundaries(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol, const std::vector<double>& sol_back)

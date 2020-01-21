@@ -13,6 +13,7 @@ public:
 	bound(payoff f, mesh grille, std::vector<std::vector<double>> conditions);
 	bound(payoff f, mesh grille);
 	
+	void adapt_mat(std::vector<std::vector<double>>& mat_inv);
 	void get_boundaries(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol, const std::vector<double>& sol_back);
 	
 private:
