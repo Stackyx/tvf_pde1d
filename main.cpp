@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 	for(int i=0; i<solver_model.solution.size(); ++i)
 	{
 		double prix = bs_price(exp(sMin+i*dx)/exp(-r*mat), S, vol, mat, 1)*exp(-r*mat);
-		std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< ", vega = " << solver_model.vega[i]<<std::endl;
+		std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< ", delta = " <<""<<std::endl;
 	}
 	
 
