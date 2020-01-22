@@ -13,7 +13,9 @@ int main(int argc, char* argv[])
 	// Exemple d'utilisation de la class payoff
 
 	//dauphine::payoff pp = dauphine::payoff("s", { 95 , 105 }, [](double d2) {return d2 * 2; }); //if the client wants to input his own function
-	payoff pp = payoff("Call", {100}); //if we want to use the function already input in the class
+	//std::function<double(double)> f = [&](double d1) { return std::max(d1 - 100, 0.0); };
+	//payoff pp = payoff("Cal", {100},  f);
+	payoff pp = payoff("Call", {100});
 	std::cout << pp.getparameters()[0] << std::endl; // get the parameters
 	
 	double mat = 1;
