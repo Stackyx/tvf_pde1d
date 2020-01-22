@@ -6,7 +6,7 @@
 #include "solver.hpp"
 #include "mesh.hpp"
 #include <algorithm>
-
+#include <fstream>
 
 int main(int argc, char* argv[])
 {	
@@ -16,14 +16,14 @@ int main(int argc, char* argv[])
 	payoff pp = payoff("Call", {100}); //if we want to use the function already input in the class
 	std::cout << pp.getparameters()[0] << std::endl; // get the parameters
 	
-	double mat = 1;
+	double mat = 10./252.;
 	double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
 	double r = 0.02;
 	
-	int nx = 1000;
-	int nt = 365;
+	int nx = 2000;
+	int nt = 10;
 	
 	mesh grille(S, mat, nx, nt, vol);
 	model model_pde(vol, r, nt, nx);
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 		// cdt[i][1] = 1.;
 	// }
 	
-	bound boundaries(pp, grille, "Dirichlet");
+	bound boundaries(pp, grille, "Neumann");
 	
 	// std::vector<double> r(10);
 	// std::vector<double> sigma(10);
@@ -59,12 +59,27 @@ int main(int argc, char* argv[])
 	double sMin = grille.get_Smin();
 	double dx = grille.get_dx();
 	
-	for(int i=0; i<solver_model.solution.size(); ++i)
+	// for(int i=0; i<solver_model.solution.size(); ++i)
+	// {
+		// double prix = bs_price(exp(sMin+i*dx)/exp(-r*mat), S, vol, mat, 1)*exp(-r*mat);
+		// std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< ", delta = " <<""<<std::endl;
+	// }
+	
+	std::ofstream f("output.csv");
+	// for(std::vector<double>::const_iterator i = solver_model.solution.begin(); i != solver_model.solution.end(); ++i) 
+	// {
+		// f << *i << '\n';
+	// }
+	
+	f << "Spot,Price,Delta,Gamma,Vega" << "\n";
+	
+	for(int i = 0; i<solver_model.solution.size(); ++i)
 	{
-		double prix = bs_price(exp(sMin+i*dx)/exp(-r*mat), S, vol, mat, 1)*exp(-r*mat);
-		std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< ", delta = " <<""<<std::endl;
+		f <<  exp(sMin+i*dx) << "," << solver_model.solution[i] << "," << solver_model.delta[i] << "," << solver_model.gamma[i] << "," << solver_model.vega[i] << "\n";
 	}
 	
-
+	f.close();
+	
 	return 0;
+
 }
