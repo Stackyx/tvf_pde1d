@@ -158,21 +158,60 @@ void solver_edp::print_results()
 	
 	std::cout << std::fixed << std::setprecision( 5 );
 	
-	if (vega.empty())
+	if (CaseSensitiveIsEqual(s_f.getname(),"Call"))
 	{
-		for(int i=0; i<solution.size(); ++i)
+		if (vega.empty())
 		{
-			prix = bs_price(exp(sMin+i*dx)/exp(-s_pde_model.get_r_avg()*s_mesh.get_mat()), s_mesh.get_S(), s_mesh.get_sigma(), s_mesh.get_mat(), 1)*exp(-s_pde_model.get_r_avg()*s_mesh.get_mat());
-			std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", theory = " << prix << ", difference = " << prix - solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << std::endl;
+			for(int i=0; i<solution.size(); ++i)
+			{
+				prix = bs_price(exp(sMin+i*dx)/exp(-s_pde_model.get_r_avg()*s_mesh.get_mat()), s_mesh.get_S(), s_mesh.get_sigma(), s_mesh.get_mat(), 1)*exp(-s_pde_model.get_r_avg()*s_mesh.get_mat());
+				std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", theory = " << prix << ", difference = " << prix - solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << std::endl;
+			}
 		}
+		else
+		{
+			for(int i=0; i<solution.size(); ++i)
+			{
+				prix = bs_price(exp(sMin+i*dx)/exp(-s_pde_model.get_r_avg()*s_mesh.get_mat()), s_mesh.get_S(), s_mesh.get_sigma(), s_mesh.get_mat(), 1)*exp(-s_pde_model.get_r_avg()*s_mesh.get_mat());
+				std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", theory = " << prix << ", difference = " << prix - solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << ", vega = " << vega[i] << std::endl;
+			}
+		}
+	}
+	else if (CaseSensitiveIsEqual(s_f.getname(),"Put"))
+	{
+		if (vega.empty())
+		{
+			for(int i=0; i<solution.size(); ++i)
+			{
+				prix = bs_price(exp(sMin+i*dx)/exp(-s_pde_model.get_r_avg()*s_mesh.get_mat()), s_mesh.get_S(), s_mesh.get_sigma(), s_mesh.get_mat(), 0)*exp(-s_pde_model.get_r_avg()*s_mesh.get_mat());
+				std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", theory = " << prix << ", difference = " << prix - solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << std::endl;
+			}
+		}
+		else
+		{
+			for(int i=0; i<solution.size(); ++i)
+			{
+				prix = bs_price(exp(sMin+i*dx)/exp(-s_pde_model.get_r_avg()*s_mesh.get_mat()), s_mesh.get_S(), s_mesh.get_sigma(), s_mesh.get_mat(), 0)*exp(-s_pde_model.get_r_avg()*s_mesh.get_mat());
+				std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", theory = " << prix << ", difference = " << prix - solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << ", vega = " << vega[i] << std::endl;
+			}
+		}	
 	}
 	else
 	{
-		for(int i=0; i<solution.size(); ++i)
+		if (vega.empty())
 		{
-			prix = bs_price(exp(sMin+i*dx)/exp(-s_pde_model.get_r_avg()*s_mesh.get_mat()), s_mesh.get_S(), s_mesh.get_sigma(), s_mesh.get_mat(), 1)*exp(-s_pde_model.get_r_avg()*s_mesh.get_mat());
-			std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", theory = " << prix << ", difference = " << prix - solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << ", vega = " << vega[i] << std::endl;
+			for(int i=0; i<solution.size(); ++i)
+			{
+				std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << std::endl;
+			}
 		}
+		else
+		{
+			for(int i=0; i<solution.size(); ++i)
+			{
+				std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << ", vega = " << vega[i] << std::endl;
+			}
+		}		
 	}
 		
 }
