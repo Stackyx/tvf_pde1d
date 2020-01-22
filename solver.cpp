@@ -44,14 +44,12 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		r = s_pde_model.get_r(i-1);
 		
 		pde_matrix(pde_mat, pde_mat_inv, sigma, sigma_plus, r, r_plus, s_theta, dt, dx, s_mesh.get_nx(), i);
-		s_bound.adapt_mat(pde_mat,pde_mat_inv, s_theta, r, sigma);
+		s_bound.adapt_mat(pde_mat,pde_mat_inv, s_theta, r, sigma); // Adapt the pde matrices to the boundary conditions
 		
 		trig_matmul(vect, pde_mat, solution);
 		product_inverse(solution, pde_mat_inv, vect); 
-
-		s_bound.get_boundaries(solution, T, dt, i-1, r);
 		
-		std::cout << solution[s_mesh.get_nx()-1] << std::endl;
+		s_bound.get_boundaries(solution, T, dt, i-1, r);
 
 	}
 	
@@ -66,30 +64,30 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		gamma[i-1] = (solution[i+1] - 2*solution[i] + solution[i-1])/(dxi*dxi1);
 	}
 	
-	if(vega_bool){
-		std::vector<double> sol2(s_mesh.get_nx());
-		std::vector<std::vector<double>> vol_bump = s_pde_model.getSigma();
-		double h = 0.0001;
-		auto lambda = [h](double d1) { return d1 + h; };
+	// if(vega_bool){
+		// std::vector<double> sol2(s_mesh.get_nx());
+		// std::vector<std::vector<double>> vol_bump = s_pde_model.getSigma();
+		// double h = 0.01;
+		// auto lambda = [h](double d1) { return d1 + h; };
 
-		for(int c = 0; c<vol_bump.size(); ++c)
-		{
-			std::transform(vol_bump[c].begin(), vol_bump[c].end(), vol_bump[c].begin(), lambda);
-		}
+		// for(int c = 0; c<vol_bump.size(); ++c)
+		// {
+			// std::transform(vol_bump[c].begin(), vol_bump[c].end(), vol_bump[c].begin(), lambda);
+		// }
 		
-		model model_bump_vol(vol_bump, s_pde_model.get_r());
-		solver_edp sol2_edp(model_bump_vol, s_mesh, s_bound, s_f, s_theta);
-		sol2_edp.solve_pde();
-		sol2 = sol2_edp.solution;
+		// model model_bump_vol(vol_bump, s_pde_model.get_r());
+		// solver_edp sol2_edp(model_bump_vol, s_mesh, s_bound, s_f, s_theta);
+		// sol2_edp.solve_pde();
+		// sol2 = sol2_edp.solution;
 
-		vega.resize(sol2.size());
+		// vega.resize(sol2.size());
 
-		for (int c = 0; c<sol2.size(); ++c)
-		{
-			vega[c] = (sol2[c] - solution[c])/h;
-		}
+		// for (int c = 0; c<sol2.size(); ++c)
+		// {
+			// vega[c] = (sol2[c] - solution[c])/h;
+		// }
 
-	}
+	// }
 }
 
 void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, const std::vector<double>& sigma, const std::vector<double>& sigma_plus, double r, double r_plus, double theta, double dt, double dx, int nx, int i)

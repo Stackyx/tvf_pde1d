@@ -15,8 +15,8 @@ public:
 	//void get_boundaries(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol, const std::vector<double>& sol_back);
 	void get_boundaries(std::vector<double>& sol, double T, double dt, int i, double r);
 	
-	double get_cdt_up();
-	double get_cdt_down();
+	// double get_cdt_up();
+	// double get_cdt_down();
 	
 private:
 	//void get_boundaries_cdt(double ri, double ri1, double sigma0, double sigma1, double T, double dt, double j, std::vector<double>& sol, const std::vector<double>& sol_back);
