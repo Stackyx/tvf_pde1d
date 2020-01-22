@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 	double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
-	double r = 0.0;
+	double r = 0.02;
 	
 	int nx = 1000;
 	int nt = 365;
