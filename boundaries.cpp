@@ -31,8 +31,8 @@ bound::bound(payoff f, mesh grille, std::string method)
 	else if (CaseSensitiveIsEqual(b_method,"Neumann"))
 	{
 		double h = 0.00001;
-		b_conditions_down = std::exp(b_mesh.get_Smin())*(payoff(b_f.getname(), b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smin()) + h) - payoff(b_f.getname(),  b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smin())))/h;
-		b_conditions_up = std::exp(b_mesh.get_Smax())*(payoff(b_f.getname(), b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smax()) + h) - payoff(b_f.getname(),  b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smax())))/h;;
+		b_conditions_down = std::exp(b_mesh.get_Smin())*(b_f.getpayoff()(std::exp(b_mesh.get_Smin()) + h) - b_f.getpayoff()(std::exp(b_mesh.get_Smin())))/h;
+		b_conditions_up = std::exp(b_mesh.get_Smax())*(b_f.getpayoff()(std::exp(b_mesh.get_Smax()) + h) - b_f.getpayoff()(std::exp(b_mesh.get_Smax())))/h;;
 	}
 }
 
