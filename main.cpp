@@ -6,7 +6,6 @@
 #include "solver.hpp"
 #include "mesh.hpp"
 #include <algorithm>
-#include <fstream>
 
 int main(int argc, char* argv[])
 {	
@@ -18,14 +17,14 @@ int main(int argc, char* argv[])
 	payoff pp = payoff("Call", {100});
 	std::cout << pp.getparameters()[0] << std::endl; // get the parameters
 	
-	double mat = 10./252.;
+	double mat = 1;
 	double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
 	double r = 0.02;
 	
-	int nx = 2000;
-	int nt = 10;
+	int nx = 1000;
+	int nt = 252;
 	
 	mesh grille(S, mat, nx, nt, vol);
 	model model_pde(vol, r, nt, nx);
@@ -57,30 +56,8 @@ int main(int argc, char* argv[])
 	
 	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
 	solver_model.solve_pde(1);
-	
-	double sMin = grille.get_Smin();
-	double dx = grille.get_dx();
-	
-	// for(int i=0; i<solver_model.solution.size(); ++i)
-	// {
-		// double prix = bs_price(exp(sMin+i*dx)/exp(-r*mat), S, vol, mat, 1)*exp(-r*mat);
-		// std::cout << exp(sMin+i*dx) << ", sol = " << solver_model.solution[i] << ", theory = " << prix << ", difference = " << prix - solver_model.solution[i]<< ", delta = " <<""<<std::endl;
-	// }
-	
-	std::ofstream f("output.csv");
-	// for(std::vector<double>::const_iterator i = solver_model.solution.begin(); i != solver_model.solution.end(); ++i) 
-	// {
-		// f << *i << '\n';
-	// }
-	
-	f << "Spot,Price,Delta,Gamma,Vega" << "\n";
-	
-	for(int i = 0; i<solver_model.solution.size(); ++i)
-	{
-		f <<  exp(sMin+i*dx) << "," << solver_model.solution[i] << "," << solver_model.delta[i] << "," << solver_model.gamma[i] << "," << solver_model.vega[i] << "\n";
-	}
-	
-	f.close();
+	solver_model.export_csv();
+	solver_model.print_results();
 	
 	return 0;
 

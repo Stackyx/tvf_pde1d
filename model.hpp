@@ -15,6 +15,7 @@ public:
 	
 	void get_vol_col(std::vector<double>& mat, const int& i);
 	double get_r(const int&i);
+	double get_r_avg();
 	std::vector<double> get_r();
 	std::vector<std::vector<double>> getSigma();
 	

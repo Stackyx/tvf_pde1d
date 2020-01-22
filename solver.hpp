@@ -12,7 +12,9 @@ public:
 	solver_edp(model pde_model, mesh grille, bound boundary, payoff f, double theta);
 	
 	void solve_pde(const bool& vega_bool = 0);
-		
+	void export_csv(std::string f_name = "output.csv");
+	void print_results();
+	
 	std::vector<double> solution;
 	std::vector<double> delta;
 	std::vector<double> gamma;

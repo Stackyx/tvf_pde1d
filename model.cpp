@@ -122,6 +122,11 @@ double model::get_r(const int&i)
 	return m_r[i];
 }
 
+double model::get_r_avg()
+{
+	return std::accumulate(m_r.begin(), m_r.end(), 0.0)/m_r.size(); // Works ok if dt is constant (it is)
+}
+
 std::vector<double> model::get_r()
 {
 	return m_r;
