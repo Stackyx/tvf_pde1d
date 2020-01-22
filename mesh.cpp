@@ -5,7 +5,7 @@
 #include "mesh.hpp"
 
 mesh::mesh(const double& S, const double& T, const int& n_x, const int& n_t, const double& sigma)
-	: m_nx(n_x), m_nt(n_t)
+	: m_nx(n_x), m_nt(n_t), m_S(S), m_sigma(sigma)
 {
 	if (m_nx % 2 == 0)
 	{
@@ -63,4 +63,19 @@ int mesh::get_nx()
 int mesh::get_nt()
 {
 	return m_nt;
+}
+
+double mesh::get_S()
+{
+	return m_S;
+}
+
+double mesh::get_sigma()
+{
+	return m_sigma;
+}
+
+double mesh::get_mat()
+{
+	return (m_nt-1)*m_dt;
 }

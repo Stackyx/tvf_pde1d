@@ -1,7 +1,10 @@
 #include <vector>
 #include "solver.hpp"
+#include "closed_form.hpp"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
+#include <iomanip>
 
 solver_edp::solver_edp(model pde_model, mesh grille, bound boundary, payoff m, double theta)
 	: s_pde_model(pde_model), s_bound(boundary), s_mesh(grille), s_f(m), s_theta(theta)
@@ -60,13 +63,13 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	{
 		double dxi = exp(s_min+(i)*s_mesh.get_dx()) - exp(s_min + (i-1)*s_mesh.get_dx());
 		double dxi1 = exp(s_min + (i+1)*s_mesh.get_dx()) - exp(s_min + i*s_mesh.get_dx());
-		
-		delta[i] = (solution[i+1] - solution[i-1])/(dxi+dxi1);
-		gamma[i] = (solution[i+1] - 2*solution[i] + solution[i-1])/(dxi*dxi);
+		double dxi2 = exp(s_min+(i+1)*s_mesh.get_dx()) - exp(s_min+(i-1)*s_mesh.get_dx());
+		delta[i] = (solution[i+1] - solution[i-1])/(dxi2);
+		delta[0] = delta[1];
+		//gamma[i] = (solution[i+1] - 2*solution[i] + solution[i-1])/(dxi*dxi);
+		gamma[i] = (delta[i] - delta[i-1])/dxi;
+		gamma[0] = gamma[1];
 	}
-	
-	delta[0] = delta[1];
-	gamma[0] = gamma[1];
 	
 	delta[solution.size()-1] = delta[solution.size()-2];
 	gamma[solution.size()-1] = gamma[solution.size()-2];
@@ -147,4 +150,58 @@ void solver_edp::trig_matmul(std::vector<double>& res, std::vector<std::vector<d
 	res[res.size()-1] = trig_mat[1][res.size()-1]*x[res.size()-1] + trig_mat[0][res.size()-1]*x[res.size()-2];
 }
 
+void solver_edp::print_results()
+{
+	double sMin = s_mesh.get_Smin();
+	double dx = s_mesh.get_dx();
+	double prix;
+	
+	std::cout << std::fixed << std::setprecision( 5 );
+	
+	if (vega.empty())
+	{
+		for(int i=0; i<solution.size(); ++i)
+		{
+			prix = bs_price(exp(sMin+i*dx)/exp(-s_pde_model.get_r_avg()*s_mesh.get_mat()), s_mesh.get_S(), s_mesh.get_sigma(), s_mesh.get_mat(), 1)*exp(-s_pde_model.get_r_avg()*s_mesh.get_mat());
+			std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", theory = " << prix << ", difference = " << prix - solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << std::endl;
+		}
+	}
+	else
+	{
+		for(int i=0; i<solution.size(); ++i)
+		{
+			prix = bs_price(exp(sMin+i*dx)/exp(-s_pde_model.get_r_avg()*s_mesh.get_mat()), s_mesh.get_S(), s_mesh.get_sigma(), s_mesh.get_mat(), 1)*exp(-s_pde_model.get_r_avg()*s_mesh.get_mat());
+			std::cout << exp(sMin+i*dx) << ", sol = " << solution[i] << ", theory = " << prix << ", difference = " << prix - solution[i] << ", delta = " << delta[i] << ", gamma = " << gamma[i] << ", vega = " << vega[i] << std::endl;
+		}
+	}
+		
+}
 
+void solver_edp::export_csv(std::string f_name)
+{
+	double sMin = s_mesh.get_Smin();
+	double dx = s_mesh.get_dx();
+	
+	std::ofstream f(f_name);
+	
+	if (vega.empty())
+	{
+		f << "Spot,Price,Delta,Gamma" << "\n";
+		
+		for(int i = 0; i<solution.size(); ++i)
+		{
+			f <<  exp(sMin+i*dx) << "," << solution[i] << "," << delta[i] << "," << gamma[i] << "\n";
+		}
+	}
+	else
+	{
+		f << "Spot,Price,Delta,Gamma,Vega" << "\n";
+	
+		for(int i = 0; i<solution.size(); ++i)
+		{
+			f <<  exp(sMin+i*dx) << "," << solution[i] << "," << delta[i] << "," << gamma[i] << "," << vega[i] << "\n";
+		}
+	}
+	
+	f.close();
+}

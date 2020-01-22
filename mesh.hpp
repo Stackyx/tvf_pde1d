@@ -13,6 +13,9 @@ public:
 	double get_dx();
 	double get_Smax();
 	double get_Smin();
+	double get_S();
+	double get_mat();
+	double get_sigma();
 	
 	int get_nx();
 	int get_nt();
@@ -26,6 +29,8 @@ private:
 	double m_Smin;
 	double m_dt;
 	double m_dx;
+	double m_S;
+	double m_sigma;
 };
 	
 
