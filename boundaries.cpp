@@ -26,7 +26,7 @@ bound::bound(payoff f, mesh grille, std::string method)
 	if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 	{
 		b_conditions_down = b_f.getpayoff()(std::exp(b_mesh.get_Smin()));
-		b_conditions_up = b_f.getpayoff()(std::exp(b_mesh.get_Smax())*std::exp(0.02));
+		b_conditions_up = b_f.getpayoff()(std::exp(b_mesh.get_Smax()));
 	}
 	else if (CaseSensitiveIsEqual(b_method,"Neumann"))
 	{
@@ -84,8 +84,8 @@ void bound::get_boundaries(std::vector<double>& sol, double T, double dt, int i,
 		
 		if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 		{
-			sol[0] = b_conditions_down;
-			sol[sol.size()-1] = b_conditions_up;
+			sol[0] = b_conditions_down * std::exp(r*T);
+			sol[sol.size()-1] = b_conditions_up * std::exp(r*T);
 		}
 		else if (CaseSensitiveIsEqual(b_method,"Neumann"))
 		{
