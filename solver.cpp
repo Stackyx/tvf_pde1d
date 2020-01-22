@@ -44,11 +44,11 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		r = s_pde_model.get_r(i-1);
 		
 		pde_matrix(pde_mat, pde_mat_inv, sigma, sigma_plus, r, r_plus, s_theta, dt, dx, s_mesh.get_nx(), i);
-		s_bound.adapt_mat(pde_mat,pde_mat_inv, s_theta, r, sigma);
+		s_bound.adapt_mat(pde_mat,pde_mat_inv, s_theta, r, sigma); // Adapt the pde matrices to the boundary conditions
 		
 		trig_matmul(vect, pde_mat, solution);
 		product_inverse(solution, pde_mat_inv, vect); 
-
+		
 		s_bound.get_boundaries(solution, T, dt, i-1, r);
 
 	}
@@ -67,7 +67,7 @@ void solver_edp::solve_pde(const bool& vega_bool)
 	// if(vega_bool){
 		// std::vector<double> sol2(s_mesh.get_nx());
 		// std::vector<std::vector<double>> vol_bump = s_pde_model.getSigma();
-		// double h = 0.0001;
+		// double h = 0.01;
 		// auto lambda = [h](double d1) { return d1 + h; };
 
 		// for(int c = 0; c<vol_bump.size(); ++c)

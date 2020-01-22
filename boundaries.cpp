@@ -25,8 +25,8 @@ bound::bound(payoff f, mesh grille, std::string method)
 	
 	if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 	{
-		b_conditions_down = b_f.getpayoff()(std::exp(b_mesh.get_Smin()));
-		b_conditions_up = b_f.getpayoff()(std::exp(b_mesh.get_Smax()));
+		// b_conditions_down = b_f.getpayoff()(std::exp(b_mesh.get_Smin())*std::exp(r*T));
+		// b_conditions_up = b_f.getpayoff()(std::exp(b_mesh.get_Smax()));
 	}
 	else if (CaseSensitiveIsEqual(b_method,"Neumann"))
 	{
@@ -58,20 +58,20 @@ void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::ve
 	else if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 	{
 		
-		mat[1][b_mesh.get_nx()-1] = std::exp(-r*dt);
-		mat[1][0] = std::exp(-r*dt);
+		mat_inv[1][b_mesh.get_nx()-1] = std::exp(r*dt);
+		mat_inv[1][0] = std::exp(r*dt);
 	}
 	
 }
 
-double bound::get_cdt_up()
-{
-	return b_conditions_up;
-}
-double bound::get_cdt_down()
-{
-	return b_conditions_down;
-}
+// double bound::get_cdt_up()
+// {
+	// return b_conditions_up;
+// }
+// double bound::get_cdt_down()
+// {
+	// return b_conditions_down;
+// }
 
 void bound::get_boundaries(std::vector<double>& sol, double T, double dt, int i, double r)
 {
@@ -84,8 +84,8 @@ void bound::get_boundaries(std::vector<double>& sol, double T, double dt, int i,
 		
 		if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 		{
-			sol[0] = b_conditions_down * std::exp(r*T);
-			sol[sol.size()-1] = b_conditions_up * std::exp(r*T);
+			sol[0] = b_f.getpayoff()(std::exp(b_mesh.get_Smin())*std::exp(r*T));
+			sol[sol.size()-1] = b_f.getpayoff()(std::exp(b_mesh.get_Smax())*std::exp(r*T));
 		}
 		else if (CaseSensitiveIsEqual(b_method,"Neumann"))
 		{
@@ -97,17 +97,7 @@ void bound::get_boundaries(std::vector<double>& sol, double T, double dt, int i,
 	{	
 		if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 		{	
-			//sol[0] = sol[0]*std::exp(-r*dt);
-			//sol[sol.size()-1] = sol[sol.size()-1]*std::exp(-r*dt);
-			
-			// std::vector<double> strike(b_f.getparameters());
-			// for(int i = 0; i<strike.size();++i)
-			// {
-				// strike[i] = strike[i]*std::exp(-r*(T - dt*i));
-			// }
-				
-			// sol[0] = payoff(b_f.getname(), strike).getpayoff()(std::exp(b_mesh.get_Smin()));
-			// sol[sol.size()-1] = payoff(b_f.getname(), strike).getpayoff()(std::exp(b_mesh.get_Smax()));
+			// Nothing to transform when using Dirichlet
 		}
 		else if (CaseSensitiveIsEqual(b_method,"Neumann"))
 		{
