@@ -50,6 +50,8 @@ void solver_edp::solve_pde(const bool& vega_bool)
 		product_inverse(solution, pde_mat_inv, vect); 
 
 		s_bound.get_boundaries(solution, T, dt, i-1, r);
+		
+		std::cout << solution[s_mesh.get_nx()-1] << std::endl;
 
 	}
 	

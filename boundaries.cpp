@@ -4,15 +4,7 @@
 #include <numeric>
 #include "boundaries.hpp"
 
-bound::bound(payoff f, mesh grille)
-	: b_f(f), b_mesh(grille)
-{
-	 b_method = "Dirichlet";
-	 b_conditions_down = payoff(b_f.getname(),  b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smin()));
-	 b_conditions_up = payoff(b_f.getname(),  b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smax()));
-}
-
-bound::bound(payoff f, mesh grille, std::string method, std::vector<double> conditions)
+bound::bound(payoff f, mesh grille, std::vector<double> conditions, std::string method)
 	: b_f(f), b_mesh(grille), b_method(method)
 {
 	if ((!(CaseSensitiveIsEqual(b_method,"Dirichlet"))) && (!(CaseSensitiveIsEqual(b_method,"Neumann"))))
@@ -42,14 +34,6 @@ bound::bound(payoff f, mesh grille, std::string method)
 		b_conditions_down = std::exp(b_mesh.get_Smin())*(payoff(b_f.getname(), b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smin()) + h) - payoff(b_f.getname(),  b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smin())))/h;
 		b_conditions_up = std::exp(b_mesh.get_Smax())*(payoff(b_f.getname(), b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smax()) + h) - payoff(b_f.getname(),  b_f.getparameters()).getpayoff()(std::exp(b_mesh.get_Smax())))/h;;
 	}
-}
-
-bound::bound(payoff f, mesh grille,std::vector<double> conditions)
-	: b_f(f), b_mesh(grille)
-{
-	b_method = "Dirichlet";
-	b_conditions_down = conditions[0];
-	b_conditions_up = conditions[1];
 }
 
 void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, double theta, double r, std::vector<double> sigma)
@@ -107,8 +91,8 @@ void bound::get_boundaries(std::vector<double>& sol, double T, double dt, int i,
 	{	
 		if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 		{	
-			sol[0] = sol[0]*std::exp(-r*dt);
-			sol[sol.size()-1] = sol[sol.size()-1]*std::exp(-r*dt);
+			sol[0] = sol[0]*std::exp(r*dt);
+			sol[sol.size()-1] = sol[sol.size()-1]*std::exp(r*dt);
 			// std::vector<double> strike(b_f.getparameters());
 			// for(int i = 0; i<strike.size();++i)
 			// {
