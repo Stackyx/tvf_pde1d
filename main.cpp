@@ -18,16 +18,27 @@ int main(int argc, char* argv[])
 	std::cout << pp.getparameters()[0] << std::endl; // get the parameters
 	
 	double mat = 1;
-	double vol = 0.2;
+	//double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
-	double r = 0.02;
+	//double r = 0.02;
 	
 	int nx = 1000;
 	int nt = 252;
 	
-	mesh grille(S, mat, nx, nt, vol);
-	model model_pde(vol, r, nt, nx);
+	std::vector<double> r(nt);
+	std::vector<double> sigma(nt);
+	
+	for(int i=0; i<nt; ++i)
+	{	
+		//sigma[i] = std::max(i*.2/100.+0.2, 0.4);
+		sigma[i] =0.2;
+		//r[i]=std::max(i*.01/100., 0.04);
+		r[i] = 0.02;
+	}
+	
+	mesh grille(S, mat, nx, nt, 0.2);
+	model model_pde(sigma, r, nt, nx);
 	
 	// std::vector<std::vector<double>> cdt(nt, std::vector<double>(2));
 	
@@ -38,16 +49,7 @@ int main(int argc, char* argv[])
 	// }
 	
 	bound boundaries(pp, grille, "Neumann");
-	
-	// std::vector<double> r(10);
-	// std::vector<double> sigma(10);
-	
-	// for(int i=0; i<10; ++i)
-	// {	
-		// sigma[i] = i*2./100.+0.2;
-		// r[i]=i*3./100.;
-	// }
-	
+
 	//model model_pde_r(100., 0.2, r, 1, 10, 10, 1./2, pp);
 
 //	model model_pde_sigmar(100., sigma, r, 1, 10, 10, 1./2, pp);
@@ -56,7 +58,7 @@ int main(int argc, char* argv[])
 	
 	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
 	solver_model.solve_pde(1);
-	solver_model.export_csv();
+	//solver_model.export_csv();
 	solver_model.print_results();
 	
 	return 0;

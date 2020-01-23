@@ -6,7 +6,7 @@
 #include <string>
 #include <cctype>
 
-payoff::payoff(const std::string& name, const std::vector<double>& parameters, std::function<double(double)> fct)
+payoff::payoff(std::string name, const std::vector<double>& parameters, const std::function<double(double)>& fct)
 		:m_name(name), param(parameters)
 	{
 		std::string s;
@@ -50,7 +50,7 @@ std::function<double(double)> payoff::getpayoff()
 	return payoff_fct;
 }
 
-bool CaseSensitiveIsEqual(const std::string& str1, const std::string str2)
+bool CaseSensitiveIsEqual(std::string str1, std::string str2)
 {
 	return ((str1.size() == str2.size()) && std::equal(str1.begin(), str1.end(), str2.begin(), [](char c1, char c2) {
 		return (c1 == c2 || std::toupper(c1) == std::toupper(c2));

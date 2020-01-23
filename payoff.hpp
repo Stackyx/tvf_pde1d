@@ -8,7 +8,7 @@
 class payoff
 {
 public:
-	explicit payoff(const std::string& name = "", const std::vector<double>& parameters = { 0 }, std::function<double(double)> fct = [](double d1) { return d1; });
+	explicit payoff(std::string name = "", const std::vector<double>& parameters = { 0 }, const std::function<double(double)>& fct = [](double d1) { return d1; });
 	std::string getname();
 	std::function<double(double)> getpayoff();
 	std::vector<double>& getparameters();
@@ -19,7 +19,7 @@ private:
 	std::function<double(double)> payoff_fct;
 };
 
-bool CaseSensitiveIsEqual(const std::string& str1, const std::string str2);
+bool CaseSensitiveIsEqual(std::string str1, std::string str2);
 
 
 #endif

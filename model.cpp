@@ -92,7 +92,7 @@ model::model(const std::vector<double>& sigma, const std::vector<double>& r, int
 
 }
 
-model::model(const std::vector<std::vector<double>>& sigma, const double& r, const int& n_t)
+model::model(const std::vector<std::vector<double>>& sigma, double r, int n_t)
 	: m_sigma(sigma)
 {
 	m_r.resize(n_t);
@@ -109,7 +109,7 @@ model::model(const std::vector<std::vector<double>>& sigma, const std::vector<do
 {
 }
 
-void model::get_vol_col(std::vector<double>& mat, const int& i)
+void model::get_vol_col(std::vector<double>& mat, int i)
 {	
 	for (int j = 0; j < mat.size(); ++j)
 	{
@@ -117,7 +117,7 @@ void model::get_vol_col(std::vector<double>& mat, const int& i)
 	}
 }
 
-double model::get_r(const int&i)
+double model::get_r(int i)
 {
 	return m_r[i];
 }
