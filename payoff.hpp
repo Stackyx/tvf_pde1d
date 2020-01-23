@@ -19,7 +19,7 @@ private:
 	std::function<double(double)> payoff_fct;
 };
 
-bool CaseSensitiveIsEqual(std::string& str1, std::string str2);
+bool CaseSensitiveIsEqual(const std::string& str1, const std::string str2);
 
 
 #endif

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <numeric>
 #include "boundaries.hpp"
+#include <cmath>
 
 bound::bound(payoff f, mesh grille, std::vector<double> conditions, std::string method)
 	: b_f(f), b_mesh(grille), b_method(method)

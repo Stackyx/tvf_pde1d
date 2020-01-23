@@ -2,6 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <numeric>
+#include <cmath>
 #include "mesh.hpp"
 
 mesh::mesh(const double& S, const double& T, const int& n_x, const int& n_t, const double& sigma)
