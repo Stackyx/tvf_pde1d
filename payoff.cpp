@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <string>
 #include <cctype>
+#include <iostream>
 
 payoff::payoff(std::string name, const std::vector<double>& parameters, const std::function<double(double)>& fct)
 		:m_name(name), param(parameters)
@@ -48,6 +49,11 @@ std::string payoff::getname()
 std::function<double(double)> payoff::getpayoff()
 {
 	return payoff_fct;
+}
+
+double payoff::getpayoff(double x)
+{
+	return payoff_fct(x);
 }
 
 bool CaseSensitiveIsEqual(std::string str1, std::string str2)

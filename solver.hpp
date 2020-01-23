@@ -9,7 +9,7 @@ class solver_edp
 {
 public:
 	
-	solver_edp(model pde_model, mesh grille, bound boundary, payoff f, double theta);
+	solver_edp(const model& pde_model, const mesh& grille, const bound& boundary, const payoff& f, double theta);
 	
 	void solve_pde(bool vega_bool = 0);
 	void export_csv(std::string f_name = "output.csv");
@@ -34,7 +34,6 @@ private:
 	
 	std::vector<std::vector<double>> s_cdt;
 	
-
 };
 
 #endif
