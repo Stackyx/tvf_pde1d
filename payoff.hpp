@@ -11,11 +11,14 @@ public:
 	explicit payoff(std::string name = "", const std::vector<double>& parameters = { 0 }, const std::function<double(double)>& fct = [](double d1) { return d1; });
 	std::string getname();
 	std::function<double(double)> getpayoff();
+	double getpayoff(double x);
+	
 	std::vector<double>& getparameters();
 
 private:
 	std::string m_name;
 	std::vector<double> param;
+	
 	std::function<double(double)> payoff_fct;
 };
 
