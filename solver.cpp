@@ -15,7 +15,7 @@ solver_edp::solver_edp(model pde_model, mesh grille, bound boundary, payoff m, d
 {
 }
 
-void solver_edp::solve_pde(const bool& vega_bool)
+void solver_edp::solve_pde(bool vega_bool)
 {       
 
         double dx(s_mesh.get_dx());
@@ -124,7 +124,7 @@ void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<s
         }
 }
 
-void solver_edp::product_inverse(std::vector<double>& x, std::vector<std::vector<double>> trig_mat, std::vector<double> d)
+void solver_edp::product_inverse(std::vector<double>& x, std::vector<std::vector<double>>& trig_mat, std::vector<double>& d)
 {
         double w;
         
@@ -143,7 +143,7 @@ void solver_edp::product_inverse(std::vector<double>& x, std::vector<std::vector
         }
 }
 
-void solver_edp::trig_matmul(std::vector<double>& res, std::vector<std::vector<double>> trig_mat, std::vector<double> x)
+void solver_edp::trig_matmul(std::vector<double>& res, std::vector<std::vector<double>>& trig_mat, std::vector<double>& x)
 {       
         for(int i=1;i<trig_mat[0].size()-1;i++)
         {

@@ -5,7 +5,7 @@
 #include <cmath>
 #include "mesh.hpp"
 
-mesh::mesh(const double& S, const double& T, const int& n_x, const int& n_t, const double& sigma)
+mesh::mesh(double S, double T, int n_x, int n_t, double sigma)
 	: m_nx(n_x), m_nt(n_t), m_S(S), m_sigma(sigma)
 {
 	if (m_nx % 2 == 0)

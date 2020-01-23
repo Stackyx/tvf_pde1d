@@ -5,7 +5,7 @@ class mesh
 {
 public:
 
-	mesh(const double& S, const double& T, const int& n_x, const int& n_t, const double& sigma);
+	mesh(double S, double T, int n_x, int n_t, double sigma);
 	
 	void print_mesh();
 	

@@ -5,7 +5,7 @@
 #include "boundaries.hpp"
 #include <cmath>
 
-bound::bound(payoff f, mesh grille, std::vector<double> conditions, std::string method)
+bound::bound(payoff f, mesh grille, const std::vector<double>& conditions, std::string method)
 	: b_f(f), b_mesh(grille), b_method(method)
 {
 	if ((!(CaseSensitiveIsEqual(b_method,"Dirichlet"))) && (!(CaseSensitiveIsEqual(b_method,"Neumann"))))
@@ -37,7 +37,7 @@ bound::bound(payoff f, mesh grille, std::string method)
 	}
 }
 
-void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, double theta, double r, std::vector<double> sigma)
+void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, double theta, double r, const std::vector<double>& sigma)
 {
 	double dx = b_mesh.get_dx();
 	double dt = b_mesh.get_dt();
