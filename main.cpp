@@ -99,10 +99,10 @@ int main(int argc, char* argv[])
 
 	auto end = std::chrono::steady_clock::now();
 	
-	std::cout << "Time taken solving :" << std::chrono::duration <double, std::milli> (end - start).count() << " ms" << std::endl;
+	std::cout << "Time taken solving : " << std::chrono::duration <double, std::milli> (end - start).count() << " ms" << std::endl;
 	
-	//solver_model.export_csv();
-	solver_model.print_results();
+	solver_model.export_csv();
+	//solver_model.print_results();
 	
 	return 0;
 
