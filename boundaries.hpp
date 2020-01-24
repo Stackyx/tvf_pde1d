@@ -16,8 +16,8 @@ public:
 		
 private:
 	
-	payoff b_f;
-	mesh b_mesh;
+	const payoff& b_f;
+	const mesh& b_mesh;
 	
 	std::string b_method;
 	double b_conditions_up;
