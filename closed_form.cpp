@@ -1,4 +1,5 @@
 #include "closed_form.hpp"
+#include "tools.hpp"
 
 #include <cmath>
 #include <limits>

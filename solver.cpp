@@ -1,6 +1,8 @@
-#include <vector>
 #include "solver.hpp"
 #include "closed_form.hpp"
+#include "tools.hpp"
+
+#include <vector>
 #include <iostream>
 #include <algorithm>
 #include <fstream>
@@ -8,7 +10,6 @@
 #include <cmath>
 
 using std::exp;
-using std::pow;
 
 solver_edp::solver_edp(const model& pde_model, const mesh& grille, const bound& boundary, const payoff& m, double theta)
         : s_pde_model(pde_model), s_bound(boundary), s_mesh(grille), s_f(m), s_theta(theta)
@@ -66,11 +67,11 @@ void solver_edp::solve_pde(bool vega_bool)
         for(int i=1; i < solution.size()-1; ++i)
         {
 			double dxi = exp(s_min+(i)*s_mesh.get_dx()) - exp(s_min + (i-1)*s_mesh.get_dx());
-			double dxi1 = exp(s_min + (i+1)*s_mesh.get_dx()) - exp(s_min + i*s_mesh.get_dx());
 			double dxi2 = exp(s_min+(i+1)*s_mesh.get_dx()) - exp(s_min+(i-1)*s_mesh.get_dx());
+			
 			delta[i] = (solution[i+1] - solution[i-1])/(dxi2);
 			delta[0] = delta[1];
-			//gamma[i] = (solution[i+1] - 2*solution[i] + solution[i-1])/(dxi*dxi);
+
 			gamma[i] = (delta[i] - delta[i-1])/dxi;
 			gamma[0] = gamma[1];
         }
@@ -115,13 +116,13 @@ void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<s
 
         for(int j = 1; j<nx-1; ++j)
         {
-                mat[1][j] = 1 - dt*(1-theta)*(pow(sigma_plus[j]/dx,2) + r_plus);
-                mat[0][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx + pow(sigma_plus[j],2)/2. - r_plus);
-                mat[2][j] = dt*(1-theta)/(2*dx)*(pow(sigma_plus[j],2)/dx - pow(sigma_plus[j],2)/2. + r_plus);
+                mat[1][j] = 1 - dt*(1-theta)*(sqr(sigma_plus[j]/dx) + r_plus);
+                mat[0][j] = dt*(1-theta)/(2*dx)*(sqr(sigma_plus[j])/dx + sqr(sigma_plus[j])/2. - r_plus);
+                mat[2][j] = dt*(1-theta)/(2*dx)*(sqr(sigma_plus[j])/dx - sqr(sigma_plus[j])/2. + r_plus);
                 
-                mat_inv[1][j] = 1+dt*theta*(pow(sigma[j]/dx,2) + r);
-                mat_inv[0][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx - pow(sigma[j],2)/2. + r);
-                mat_inv[2][j] = dt*theta/(2*dx)*(-pow(sigma[j],2)/dx + pow(sigma[j],2)/2. - r);
+                mat_inv[1][j] = 1+dt*theta*(sqr(sigma[j]/dx) + r);
+                mat_inv[0][j] = dt*theta/(2*dx)*(-sqr(sigma[j])/dx - sqr(sigma[j])/2. + r);
+                mat_inv[2][j] = dt*theta/(2*dx)*(-sqr(sigma[j])/dx + sqr(sigma[j])/2. - r);
         }
 }
 

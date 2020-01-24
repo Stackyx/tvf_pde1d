@@ -1,6 +1,9 @@
 #ifndef MESH_HPP
 #define MESH_HPP
 
+#include <vector>
+#include <string>
+
 class mesh
 {
 public:

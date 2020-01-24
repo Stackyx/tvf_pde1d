@@ -1,10 +1,12 @@
-#include <iostream>
 #include "closed_form.hpp"
 #include "payoff.hpp"
 #include "model.hpp"
 #include "boundaries.hpp"
 #include "solver.hpp"
 #include "mesh.hpp"
+#include "tools.hpp"
+
+#include <iostream>
 #include <algorithm>
 #include <chrono>
 #include <string>
@@ -90,9 +92,8 @@ int main(int argc, char* argv[])
 	}
 	
 	auto start = std::chrono::steady_clock::now();
-	
 	model model_pde(sigma, r, nt, nx);
-	
+		
 	bound boundaries(pp, grille, "Neumann");
 	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
 	solver_model.solve_pde(1);

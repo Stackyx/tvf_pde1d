@@ -33,6 +33,8 @@ set(PDE_SOLVER_SRCS
     mesh.hpp
     boundaries.hpp
     boundaries.cpp
+    tools.cpp
+    tools.hpp
     main.cpp)
 
 set(PDE_SOLVER_TARGET pde_solver)
