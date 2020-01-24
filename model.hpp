@@ -11,7 +11,7 @@ public:
 	model(double sigma, const std::vector<double>& r, int n_t, int n_x);
 	model(const std::vector<double>& sigma, const std::vector<double>& r, int n_t, int n_x);
 	model(const std::vector<std::vector<double>>& sigma, double r, int n_t);
-	model(const std::vector<std::vector<double>>& sigma, const std::vector<double>& r);
+	model(const std::vector<std::vector<double>>& sigma, const std::vector<double>& r, int n_t, int n_x);
 	
 	void get_vol_col(std::vector<double>& mat, int i);
 	double get_r(int i);

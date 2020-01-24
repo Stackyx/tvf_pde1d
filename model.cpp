@@ -104,9 +104,17 @@ model::model(const std::vector<std::vector<double>>& sigma, double r, int n_t)
 
 }
 
-model::model(const std::vector<std::vector<double>>& sigma, const std::vector<double>& r)
+model::model(const std::vector<std::vector<double>>& sigma, const std::vector<double>& r, int n_t, int n_x)
 	: m_sigma(sigma), m_r(r)
 {
+	if (m_sigma.size() != n_x)
+	{
+		std::cout << "Sigma size mispecified in x";
+	}
+	if (m_sigma[1].size() != n_t)
+	{
+		std::cout << "Sigma size mispecified in t";
+	}
 }
 
 void model::get_vol_col(std::vector<double>& mat, int i)

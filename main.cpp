@@ -15,22 +15,25 @@ int main(int argc, char* argv[])
 
 	payoff pp = payoff("Call", {100});
 	
-	double mat = 5;
+	double mat = 1;
 	//double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
 	//double r = 0.02;
 	
-	int nx = 1000;
-	int nt = 252*5;
+	int nx = 1001;
+	int nt = 252;
 	
 	std::vector<double> r(nt);
-	std::vector<double> sigma(nt);
+	std::vector<std::vector<double>> sigma(nx, std::vector<double>(nt));
 	
 	for(int i=0; i<nt; ++i)
 	{	
+		for (int j = 0; j <nx; ++j)
+		{
 		//sigma[i] = std::max(i*.2/100.+0.2, 0.4);
-		sigma[i] =0.2;
+			sigma[j][i] =0.2;
+		}
 		//r[i]=std::max(i*.01/100., 0.04);
 		r[i] = 0.02;
 	}
@@ -39,7 +42,7 @@ int main(int argc, char* argv[])
 	
 	mesh grille(S, mat, nx, nt, 0.2);
 	model model_pde(sigma, r, nt, nx);
-	
+
 	// std::vector<std::vector<double>> cdt(nt, std::vector<double>(2));
 	
 	// for (int i=0; i<nt; ++i)
@@ -49,17 +52,15 @@ int main(int argc, char* argv[])
 	// }
 	
 	bound boundaries(pp, grille, "Neumann");
-	
 	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
-		
 	solver_model.solve_pde(1);
-	
+
 	auto end = std::chrono::steady_clock::now();
 	
 	std::cout << "Time taken solving :" << std::chrono::duration <double, std::milli> (end - start).count() << " ms" << std::endl;
 	
 	//solver_model.export_csv();
-	//solver_model.print_results();
+	solver_model.print_results();
 	
 	return 0;
 
