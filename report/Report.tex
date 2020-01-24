@@ -162,7 +162,7 @@ B_{+}^{\theta} &= -\theta \frac{\sigma^2}{2dx^2} - (\frac{\sigma^2}{2}- r) \thet
 
 Then we obtain :
 
-\begin{align} 
+\begin{align} \label{formula0}
  f_{i}^{n+1} A_{1}^{(1-\theta)} +f_{i+1}^{n+1} B_{-}^{(1-\theta)}  +f_{i-1}^{n+1} B_{+}^{(1-\theta)} &=
  f_{i}^{n} A_{2}^{\theta} - f_{i+1}^{n} B_{-}^{\theta}  -f_{i-1}^{n} B_{+}^{\theta} 
  \end{align}
@@ -224,7 +224,7 @@ $
 \frac{df}{dx} (t_{n},x_{0}) = \frac{f_{x_{max}}^{n}-f_{x_{max}-1}^{n}}{dx} &\Leftrightarrow f_{x_{max}}^{n} = f_{x_{max}-1}^{n} + k_{2} dx \label{formula3} 
 \end{align}
 
-Using the same formula :
+Using the same formula (equation \ref{formula0}):
 \begin{align} \label{formula1}
  f_{i}^{n+1} A_{1}^{(1-\theta)} +f_{i+1}^{n+1} B_{-}^{(1-\theta)}  +f_{i-1}^{n+1} B_{+}^{(1-\theta)} &=
  f_{i}^{n} A_{2}^{\theta} - f_{i+1}^{n} B_{-}^{\theta}  -f_{i-1}^{n} B_{+}^{\theta} 
@@ -287,11 +287,19 @@ k_{2}\\
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Userguide} 
 
+Our program offers the possibility to the user to input the volatility matrix and the rates vector in an excel (csv) file. To do so, the program will ask the user if he wants to use this feature (see figure \ref{terminal1}). If the user answers "yes" (y) then the program creates two .csv files to be completed by the user. One for the volatility and the other one for the rates. To input its parameters, the user can open the .csv file in excel, and convert the column A "from text to columns". User will find an empty matrix with the X in lines (all spot prices) and Y in columns (all the times considered). Once saved the user continues to run the program by pressing "ENTER".\\
 
-
-
-
+\begin{figure}[H]
+\begin{center}
+\includegraphics[height=3cm]{terminal.png}
+\caption{Options available}\label{terminal1}
+\end{center}
+\end{figure}
 
 
 
