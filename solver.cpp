@@ -105,7 +105,7 @@ void solver_edp::solve_pde(bool vega_bool)
         }
 }
 
-void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, const std::vector<double>& sigma, const std::vector<double>& sigma_plus, double r, double r_plus, double theta, double dt, double dx, int nx, int i)
+void solver_edp::pde_matrix(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, const std::vector<double>& sigma, const std::vector<double>& sigma_plus, double r, double r_plus, double theta, double dt, double dx, int nx, int i) const
 {       
         mat[1][0] = 1;
         mat[1][nx-1] = 1;
@@ -221,7 +221,7 @@ void solver_edp::print_results() const
                 
 }
 
-void solver_edp::export_csv(std::string f_name)
+void solver_edp::export_csv(std::string f_name) const
 {
         double sMin = s_mesh.get_Smin();
         double dx = s_mesh.get_dx();
