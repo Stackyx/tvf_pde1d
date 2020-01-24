@@ -13,7 +13,7 @@ public:
 	
 	void solve_pde(bool vega_bool = 0);
 	void export_csv(std::string f_name = "output.csv");
-	void print_results();
+	void print_results() const;
 	
 	std::vector<double> solution;
 	std::vector<double> delta;

@@ -117,7 +117,7 @@ model::model(const std::vector<std::vector<double>>& sigma, const std::vector<do
 	}
 }
 
-void model::get_vol_col(std::vector<double>& mat, int i)
+void model::get_vol_col(std::vector<double>& mat, int i) const
 {	
 	for (int j = 0; j < mat.size(); ++j)
 	{
@@ -125,22 +125,22 @@ void model::get_vol_col(std::vector<double>& mat, int i)
 	}
 }
 
-double model::get_r(int i)
+double model::get_r(int i) const
 {
 	return m_r[i];
 }
 
-double model::get_r_avg()
+double model::get_r_avg() const
 {
 	return std::accumulate(m_r.begin(), m_r.end(), 0.0)/m_r.size(); // Works ok if dt is constant (it is)
 }
 
-std::vector<double> model::get_r()
+std::vector<double> model::get_r() const
 {
 	return m_r;
 }
 
-std::vector<std::vector<double>>  model::getSigma()
+std::vector<std::vector<double>>  model::getSigma() const
 {
 	return m_sigma;
 }

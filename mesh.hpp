@@ -7,22 +7,22 @@ public:
 
 	mesh(double S, double T, int& n_x, int n_t, double sigma);
 	
-	void print_mesh();
-	void export_empty_sigma(std::string f_name = "sigma.csv");
-	void read_sigma(std::vector<std::vector<double>>& M);
-	void export_empty_rate(std::string f_name = "rate.csv");
-	void read_rate(std::vector<double>& r);
+	void print_mesh() const;
+	void export_empty_sigma(std::string f_name = "sigma.csv") const;
+	void read_sigma(std::vector<std::vector<double>>& M) const;
+	void export_empty_rate(std::string f_name = "rate.csv") const;
+	void read_rate(std::vector<double>& r) const;
 	
-	double get_dt();
-	double get_dx();
-	double get_Smax();
-	double get_Smin();
-	double get_S();
-	double get_mat();
-	double get_sigma();
+	double get_dt() const;
+	double get_dx() const;
+	double get_Smax() const;
+	double get_Smin() const;
+	double get_S() const;
+	double get_mat() const;
+	double get_sigma() const;
 	
-	int get_nx();
-	int get_nt();
+	int get_nx() const;
+	int get_nt() const;
 	
 private:
 	
