@@ -34,11 +34,11 @@ void solver_edp::solve_pde(bool vega_bool)
         
         double r(s_pde_model.get_r(s_mesh.get_nt()-1));
         double r_plus;
-        		std::cout << "ok" << std::endl;
+
         s_pde_model.get_vol_col(sigma,s_mesh.get_nt()-1);
-        std::cout << "ok" << std::endl;
+
         s_bound.get_boundaries(solution, T, dt, s_mesh.get_nt()-1, r); // Compute terminal conditions
-        std::cout << "ok" << std::endl;
+
         std::vector<std::vector<double>> pde_mat(3, std::vector<double>(s_mesh.get_nx()));
         std::vector<std::vector<double>> pde_mat_inv(3, std::vector<double>(s_mesh.get_nx()));
 
