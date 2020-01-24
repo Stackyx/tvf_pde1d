@@ -5,9 +5,13 @@ class mesh
 {
 public:
 
-	mesh(double S, double T, int n_x, int n_t, double sigma);
+	mesh(double S, double T, int& n_x, int n_t, double sigma);
 	
 	void print_mesh();
+	void export_empty_sigma(std::string f_name = "sigma.csv");
+	void read_sigma(std::vector<std::vector<double>>& M);
+	void export_empty_rate(std::string f_name = "rate.csv");
+	void read_rate(std::vector<double>& r);
 	
 	double get_dt();
 	double get_dx();

@@ -7,6 +7,7 @@
 #include "mesh.hpp"
 #include <algorithm>
 #include <chrono>
+#include <string>
 
 int main(int argc, char* argv[])
 {	
@@ -16,40 +17,81 @@ int main(int argc, char* argv[])
 	payoff pp = payoff("Call", {100});
 	
 	double mat = 1;
-	//double vol = 0.2;
 	double S = 100;
 	double theta = 1./2;
-	//double r = 0.02;
 	
-	int nx = 1001;
+	int nx = 1000;
 	int nt = 252;
 	
-	std::vector<double> r(nt);
-	std::vector<std::vector<double>> sigma(nx, std::vector<double>(nt));
+	std::vector<double> r;
+	std::vector<std::vector<double>> sigma;
 	
-	for(int i=0; i<nt; ++i)
-	{	
-		for (int j = 0; j <nx; ++j)
+	std::string user_input;
+	
+	mesh grille(S, mat, nx, nt, 0.2);
+	
+	while (user_input != "y" && user_input != "n")
+	{
+		std::cout <<  "Do you want to input your own sigma matrix ? y/n ";
+		std::cin >> user_input;
+	}
+	
+	if (user_input == "y")
+	{
+		std::string tmp;
+		grille.export_empty_sigma();
+		std::cout << "Please input values in the sigma.csv just outputed and press ENTER";
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		std::cin.get();
+		
+		grille.read_sigma(sigma);
+		std::cout << "Sigma read successfully" << std::endl;
+	}
+	else
+	{
+		std::cout << "Using sigma coded in the main.cpp" << std::endl;
+		sigma.resize(nx, std::vector<double>(nt));
+		for (int i= 0; i < nx; ++i)
 		{
-		//sigma[i] = std::max(i*.2/100.+0.2, 0.4);
-			sigma[j][i] =0.2;
+			for (int j=0; j < nt; ++j)
+			{
+				sigma[i][j] = 0.2;
+			}
 		}
-		//r[i]=std::max(i*.01/100., 0.04);
-		r[i] = 0.02;
+	}
+	
+	user_input = "";
+	
+	while (user_input != "y" && user_input != "n")
+	{
+		std::cout <<  "Do you want to input your own rate vector ? y/n ";
+		std::cin >> user_input;
+	}
+	
+	if (user_input == "y")
+	{
+		std::string tmp;
+		grille.export_empty_rate();
+		std::cout << "Please input values in the rate.csv just outputed and press ENTER";
+		std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		std::cin.get();
+		
+		grille.read_rate(r);
+		std::cout << "Sigma read successfully" << std::endl;
+	}
+	else
+	{
+		std::cout << "Using rate coded in the main.cpp" << std::endl;
+		r.resize(nt);
+		for (int i= 0; i < nt; ++i)
+		{
+			r[i]= 0.04;
+		}
 	}
 	
 	auto start = std::chrono::steady_clock::now();
 	
-	mesh grille(S, mat, nx, nt, 0.2);
 	model model_pde(sigma, r, nt, nx);
-
-	// std::vector<std::vector<double>> cdt(nt, std::vector<double>(2));
-	
-	// for (int i=0; i<nt; ++i)
-	// {
-		// cdt[i][0] = 0;
-		// cdt[i][1] = 1.;
-	// }
 	
 	bound boundaries(pp, grille, "Neumann");
 	solver_edp solver_model(model_pde, grille, boundaries, pp, theta);
