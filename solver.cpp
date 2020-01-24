@@ -247,5 +247,7 @@ void solver_edp::export_csv(std::string f_name) const
                 }
         }
         
+		std::cout << "Results exported to " << f_name << std::endl;
+		
         f.close();
 }
