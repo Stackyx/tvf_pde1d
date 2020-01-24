@@ -1,11 +1,14 @@
+#include "tools.hpp"
+#include "mesh.hpp"
+
+#include <fstream>
+#include <sstream>
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <numeric>
 #include <cmath>
-#include "mesh.hpp"
-#include <fstream>
-#include <sstream>
+#include <string>
 
 mesh::mesh(double S, double T, int& n_x, int n_t, double sigma)
 	: m_nt(n_t), m_S(S), m_sigma(sigma)

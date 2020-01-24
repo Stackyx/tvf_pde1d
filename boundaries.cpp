@@ -1,8 +1,10 @@
+#include "boundaries.hpp"
+#include "tools.hpp"
+
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <numeric>
-#include "boundaries.hpp"
 #include <cmath>
 
 bound::bound(const payoff& f, const mesh& grille, const std::vector<double>& conditions, std::string method)
@@ -49,11 +51,11 @@ void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::ve
 		mat[0][b_mesh.get_nx()-1] = -1/dx;
 		mat[1][b_mesh.get_nx()-1] = 1/dx;
 			
-		mat_inv[1][1] = 1+dt*theta*(pow(sigma[1]/dx,2)*0.5 + r - (1./2.*sigma[1]*sigma[1] - r)/(2*dx));
-		mat_inv[0][1] = -dt*theta/(2*dx)*(-pow(sigma[1],2)/dx - pow(sigma[1],2)/2. + r)*dx;
+		mat_inv[1][1] = 1+dt*theta*(sqr(sigma[1]/dx)*0.5 + r - (1./2.*sigma[1]*sigma[1] - r)/(2*dx));
+		mat_inv[0][1] = -dt*theta/(2*dx)*(-sqr(sigma[1])/dx - sqr(sigma[1])/2. + r)*dx;
 		
-		mat_inv[1][b_mesh.get_nx()-2] = 1+dt*theta*(pow(sigma[b_mesh.get_nx()-2]/dx,2)*0.5 + r + (1./2.*sigma[b_mesh.get_nx()-2]*sigma[b_mesh.get_nx()-2] - r)/(2*dx));
-		mat_inv[2][b_mesh.get_nx()-2] = dx * dt*theta/(2*dx)*(-pow(sigma[b_mesh.get_nx()-2],2)/dx + pow(sigma[b_mesh.get_nx()-2],2)/2. - r);
+		mat_inv[1][b_mesh.get_nx()-2] = 1+dt*theta*(sqr(sigma[b_mesh.get_nx()-2]/dx)*0.5 + r + (1./2.*sigma[b_mesh.get_nx()-2]*sigma[b_mesh.get_nx()-2] - r)/(2*dx));
+		mat_inv[2][b_mesh.get_nx()-2] = dx * dt*theta/(2*dx)*(-sqr(sigma[b_mesh.get_nx()-2])/dx + sqr(sigma[b_mesh.get_nx()-2])/2. - r);
 	}
 	else if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 	{

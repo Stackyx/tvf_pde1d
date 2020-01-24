@@ -1,4 +1,5 @@
 #include "payoff.hpp"
+#include "tools.hpp"
 
 #include <cmath>
 #include <limits>
