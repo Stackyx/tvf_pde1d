@@ -36,22 +36,22 @@ payoff::payoff(std::string name, const std::vector<double>& parameters, const st
 
 	}
 
-std::vector<double>& payoff::getparameters()
+std::vector<double> payoff::getparameters() const
 {
 	return param;
 }
 
-std::string payoff::getname()
+std::string payoff::getname() const
 {
 	return m_name;
 }
 
-std::function<double(double)> payoff::getpayoff()
+std::function<double(double)> payoff::getpayoff() const
 {
 	return payoff_fct;
 }
 
-double payoff::getpayoff(double x)
+double payoff::getpayoff(double x) const
 {
 	return payoff_fct(x);
 }

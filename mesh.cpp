@@ -25,7 +25,7 @@ mesh::mesh(double S, double T, int& n_x, int n_t, double sigma)
 	m_dx = (m_Smax - m_Smin)/(m_nx - 1);
 }
 
-void mesh::print_mesh()
+void mesh::print_mesh() const
 {
 	for(int j=0; j < m_nx; ++j)
 	{
@@ -40,7 +40,7 @@ void mesh::print_mesh()
 	}
 }
 
-void mesh::export_empty_sigma(std::string f_name)
+void mesh::export_empty_sigma(std::string f_name) const
 {
 	std::ofstream f(f_name);
 	
@@ -61,7 +61,7 @@ void mesh::export_empty_sigma(std::string f_name)
 	f.close();
 }
 
-void mesh::export_empty_rate(std::string f_name)
+void mesh::export_empty_rate(std::string f_name) const
 {
 	std::ofstream f(f_name);
 	
@@ -75,8 +75,11 @@ void mesh::export_empty_rate(std::string f_name)
 	f.close();
 }
 
-void mesh::read_sigma(std::vector<std::vector<double>>& M)
+void mesh::read_sigma(std::vector<std::vector<double>>& M) const
 {
+	
+	// Got it from the internet and then adapted for the code
+	
 	std::ifstream in("sigma.csv");
 	std::string line;
 	int cpt_r = 0;
@@ -103,7 +106,7 @@ void mesh::read_sigma(std::vector<std::vector<double>>& M)
 	}
 }
 
-void mesh::read_rate(std::vector<double>& r)
+void mesh::read_rate(std::vector<double>& r) const
 {
 	std::ifstream in("rate.csv");
 	std::string line;
@@ -127,47 +130,47 @@ void mesh::read_rate(std::vector<double>& r)
 	}
 }
 
-double mesh::get_dx()
+double mesh::get_dx() const
 {
 	return m_dx;
 }
 
-double mesh::get_dt()
+double mesh::get_dt() const
 {
 	return m_dt;
 }
 
-double mesh::get_Smax()
+double mesh::get_Smax() const
 {
 	return m_Smax;
 }
 
-double mesh::get_Smin()
+double mesh::get_Smin() const
 {
 	return m_Smin;
 }
 
-int mesh::get_nx()
+int mesh::get_nx() const
 {
 	return m_nx;
 }
 
-int mesh::get_nt()
+int mesh::get_nt() const
 {
 	return m_nt;
 }
 
-double mesh::get_S()
+double mesh::get_S() const
 {
 	return m_S;
 }
 
-double mesh::get_sigma()
+double mesh::get_sigma() const
 {
 	return m_sigma;
 }
 
-double mesh::get_mat()
+double mesh::get_mat() const
 {
 	return (m_nt-1)*m_dt;
 }

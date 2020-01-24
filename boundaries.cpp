@@ -26,8 +26,7 @@ bound::bound(const payoff& f, const mesh& grille, std::string method)
 	
 	if (CaseSensitiveIsEqual(b_method,"Dirichlet"))
 	{
-		// b_conditions_down = b_f.getpayoff()(std::exp(b_mesh.get_Smin())*std::exp(r*T));
-		// b_conditions_up = b_f.getpayoff()(std::exp(b_mesh.get_Smax()));
+		
 	}
 	else if (CaseSensitiveIsEqual(b_method,"Neumann"))
 	{
@@ -37,7 +36,7 @@ bound::bound(const payoff& f, const mesh& grille, std::string method)
 	}
 }
 
-void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, double theta, double r, const std::vector<double>& sigma)
+void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::vector<double>>& mat_inv, double theta, double r, const std::vector<double>& sigma) const
 {
 	double dx = b_mesh.get_dx();
 	double dt = b_mesh.get_dt();
@@ -65,16 +64,7 @@ void bound::adapt_mat(std::vector<std::vector<double>>& mat, std::vector<std::ve
 	
 }
 
-// double bound::get_cdt_up()
-// {
-	// return b_conditions_up;
-// }
-// double bound::get_cdt_down()
-// {
-	// return b_conditions_down;
-// }
-
-void bound::get_boundaries(std::vector<double>& sol, double T, double dt, int i, double r)
+void bound::get_boundaries(std::vector<double>& sol, double T, double dt, int i, double r) const
 {
 	if (dt*i == T)
 	{

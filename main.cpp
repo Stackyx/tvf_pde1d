@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 		std::cin.get();
 		
 		grille.read_rate(r);
-		std::cout << "Sigma read successfully" << std::endl;
+		std::cout << "Rate read successfully" << std::endl;
 	}
 	else
 	{

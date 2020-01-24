@@ -155,7 +155,7 @@ void solver_edp::trig_matmul(std::vector<double>& res, std::vector<std::vector<d
         res[res.size()-1] = trig_mat[1][res.size()-1]*x[res.size()-1] + trig_mat[0][res.size()-1]*x[res.size()-2];
 }
 
-void solver_edp::print_results()
+void solver_edp::print_results() const
 {
         double sMin = s_mesh.get_Smin();
         double dx = s_mesh.get_dx();
