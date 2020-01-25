@@ -91,6 +91,8 @@ int main(int argc, char* argv[])
 		}
 	}
 	
+	try
+	{
 	auto start = std::chrono::steady_clock::now();
 	model model_pde(sigma, r, nt, nx);
 		
@@ -103,6 +105,12 @@ int main(int argc, char* argv[])
 	std::cout << "Time taken solving : " << std::chrono::duration <double, std::milli> (end - start).count() << " ms" << std::endl;
 	
 	solver_model.export_csv();
+	}
+	catch(std::exception& e)
+	{
+		std::cout << e.what() << std::endl;
+		std::cout << "Exiting programme without solving." << std::endl;
+	}
 	//solver_model.print_results();
 	
 	return 0;
